@@ -1,0 +1,166 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\SpecificationGroup;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+
+class ProductController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $query = Product::with(['category', 'brand', 'variants']);
+
+        if ($search = $request->input('q')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('variants', function ($vq) use ($search) {
+                      $vq->where('sku', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($categoryId = $request->input('category_id')) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $products = $query->latest()->paginate(15)->withQueryString();
+        $categories = Category::orderBy('name')->get();
+        $brands = Brand::orderBy('name')->get();
+
+        return view('admin.products.index', compact('products', 'categories', 'brands'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $brands = Brand::where('is_active', true)->orderBy('name')->get();
+        $specGroups = SpecificationGroup::with('attributes')->orderBy('sort_order')->get();
+
+        return view('admin.products.create', compact('categories', 'brands', 'specGroups'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProductRequest $request): RedirectResponse
+    {
+        DB::transaction(function () use ($request) {
+            $slug = Str::slug($request->name);
+            // Ensure unique slug
+            $originalSlug = $slug;
+            $count = 1;
+            while (Product::where('slug', $slug)->exists()) {
+                $slug = "{$originalSlug}-{$count}";
+                $count++;
+            }
+
+            $product = Product::create([
+                'category_id' => $request->category_id,
+                'brand_id' => $request->brand_id,
+                'name' => $request->name,
+                'slug' => $slug,
+                'short_description' => $request->short_description,
+                'description' => $request->description,
+                'warranty_period_months' => $request->warranty_period_months,
+                'status' => $request->status,
+                'is_featured' => $request->boolean('is_featured'),
+            ]);
+
+            // Create Primary Variant
+            ProductVariant::create([
+                'product_id' => $product->id,
+                'name' => 'Standar / Default',
+                'sku' => strtoupper(trim($request->sku)),
+                'price' => $request->price,
+                'cost_price' => $request->cost_price ?? 0,
+                'stock' => $request->stock,
+                'weight_grams' => $request->weight_grams,
+                'is_default' => true,
+                'is_active' => true,
+            ]);
+        });
+
+        return redirect()->route('admin.produk.index')
+            ->with('success', 'Produk baru berhasil ditambahkan ke katalog!');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Product $produk): View
+    {
+        $product = $produk->load(['category', 'brand', 'variants', 'specifications']);
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $brands = Brand::where('is_active', true)->orderBy('name')->get();
+        $defaultVariant = $product->variants()->where('is_default', true)->first();
+
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'defaultVariant'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateProductRequest $request, Product $produk): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $produk) {
+            $produk->update([
+                'category_id' => $request->category_id,
+                'brand_id' => $request->brand_id,
+                'name' => $request->name,
+                'short_description' => $request->short_description,
+                'description' => $request->description,
+                'warranty_period_months' => $request->warranty_period_months,
+                'status' => $request->status,
+                'is_featured' => $request->boolean('is_featured'),
+            ]);
+
+            $defaultVariant = $produk->variants()->where('is_default', true)->first();
+            if ($defaultVariant) {
+                $defaultVariant->update([
+                    'sku' => strtoupper(trim($request->sku)),
+                    'price' => $request->price,
+                    'cost_price' => $request->cost_price ?? 0,
+                    'stock' => $request->stock,
+                    'weight_grams' => $request->weight_grams,
+                ]);
+            }
+        });
+
+        return redirect()->route('admin.produk.index')
+            ->with('success', 'Data produk ' . $produk->name . ' berhasil diperbarui!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $produk): RedirectResponse
+    {
+        $name = $produk->name;
+        $produk->delete();
+
+        return redirect()->route('admin.produk.index')
+            ->with('success', 'Produk ' . $name . ' berhasil dihapus dari katalog.');
+    }
+}
