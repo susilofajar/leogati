@@ -201,7 +201,7 @@ class ReportingService
      */
     public function getStockMovementReport(array $filters = []): \Illuminate\Database\Eloquent\Builder
     {
-        $query = InventoryMovement::with(['productVariant.product', 'warehouse', 'user'])
+        $query = InventoryMovement::with(['productVariant.product', 'warehouse', 'performer'])
             ->latest();
 
         if (!empty($filters['variant_id'])) {

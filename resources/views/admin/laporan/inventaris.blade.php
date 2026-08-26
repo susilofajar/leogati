@@ -1144,14 +1144,14 @@
                                                 justify-center text-[9px]
                                                 font-black">
 
-                                        {{ strtoupper(substr($mov->user?->name ?? 'S', 0, 1)) }}
+                                        {{ strtoupper(substr($mov->performer?->name ?? 'S', 0, 1)) }}
 
                                     </div>
 
                                     <span class="text-[10px] font-semibold
                                                  text-slate-600 whitespace-nowrap">
 
-                                        {{ $mov->user?->name ?? 'Sistem' }}
+                                        {{ $mov->performer?->name ?? 'Sistem' }}
 
                                     </span>
 
