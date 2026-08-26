@@ -61,6 +61,7 @@
                 Dashboard
             </a>
 
+            @canany(['viewAny', 'create'], App\Models\Product::class)
             <div class="px-2 pt-3.5 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Katalog & Stok
             </div>
@@ -71,18 +72,24 @@
                 Produk & Varian
             </a>
 
+            @can('viewAny', App\Models\Category::class)
             <a href="{{ route('admin.kategori.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.kategori.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 Kategori Produk
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\Brand::class)
             <a href="{{ route('admin.merek.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.merek.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 Merek Resmi
             </a>
+            @endcan
+            @endcanany
 
+            @can('viewAny', App\Models\Inventory::class)
             <a href="{{ route('admin.inventaris.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.inventaris.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -94,41 +101,53 @@
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
                 Lokasi Gudang
             </a>
+            @endcan
 
             <div class="px-2 pt-3.5 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Operasional Toko
             </div>
 
+            @can('viewAny', App\Models\Order::class)
             <a href="{{ route('admin.pesanan.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.pesanan.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                 Pesanan Masuk
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\Inventory::class)
             <a href="{{ route('admin.nomor_seri.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.nomor_seri.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 Nomor Seri Unit
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\WarrantyClaim::class)
             <a href="{{ route('admin.garansi.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.garansi.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Klaim Garansi & RMA
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\Coupon::class)
             <a href="{{ route('admin.kupon.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.kupon.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                 Kupon Promosi
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\Review::class)
             <a href="{{ route('admin.ulasan.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.ulasan.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
                 Moderasi Ulasan
             </a>
+            @endcan
 
+            @canany(['viewAny', 'create'], App\Models\PurchaseOrder::class)
             <div class="px-2 pt-3.5 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Pengadaan & Vendor
             </div>
@@ -139,40 +158,54 @@
                 Purchase Order (PO)
             </a>
 
+            @can('viewAny', App\Models\Supplier::class)
             <a href="{{ route('admin.supplier.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.supplier.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 Supplier & Vendor
             </a>
+            @endcan
+            @endcanany
 
+            @can('viewAny', 'report')
             <div class="px-2 pt-3.5 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Laporan & Analitik
             </div>
 
+            @can('viewSales', 'report')
             <a href="{{ route('admin.laporan.penjualan') }}"
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.laporan.penjualan') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 Laporan Penjualan
             </a>
+            @endcan
 
+            @can('viewInventory', 'report')
             <a href="{{ route('admin.laporan.inventaris') }}"
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.laporan.inventaris') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                 Laporan Inventaris
             </a>
+            @endcan
 
+            @can('viewPurchasing', 'report')
             <a href="{{ route('admin.laporan.pembelian') }}"
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.laporan.pembelian') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 Laporan Pembelian
             </a>
+            @endcan
 
+            @can('viewCustomers', 'report')
             <a href="{{ route('admin.laporan.pelanggan') }}"
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.laporan.pelanggan') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 Laporan Pelanggan
             </a>
+            @endcan
+            @endcan
 
+            @can('viewAny', App\Models\User::class)
             <div class="px-2 pt-3.5 pb-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                 Sistem & Pengguna
             </div>
@@ -182,12 +215,15 @@
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Pengguna & Staf
             </a>
+            @endcan
 
+            @can('viewAny', App\Models\AuditLog::class)
             <a href="{{ route('admin.audit_log.index') }}"
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.audit_log.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
                 <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 Jejak Audit
             </a>
+            @endcan
 
         </nav>
 

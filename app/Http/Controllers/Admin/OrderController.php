@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Services\AuditLogService;
 use App\Services\ShippingService;
@@ -16,11 +17,14 @@ class OrderController extends Controller
     public function __construct(
         protected ShippingService $shippingService
     ) {}
+
     /**
      * Display a listing of all customer orders.
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Order::class);
+
         $q = $request->input('q');
         $status = $request->input('status');
         $paymentStatus = $request->input('payment_status');
@@ -56,6 +60,8 @@ class OrderController extends Controller
         $order = Order::with(['user', 'items.variant.product.brand', 'payment'])
             ->findOrFail($id);
 
+        $this->authorize('view', $order);
+
         // Get tracking information if tracking number exists
         $trackingInfo = null;
         if ($order->shipping_tracking_number && $order->shipping_courier) {
@@ -71,15 +77,10 @@ class OrderController extends Controller
     /**
      * Update order status and tracking info.
      */
-    public function updateStatus(Request $request, int $id): RedirectResponse
+    public function updateStatus(UpdateOrderStatusRequest $request, int $id): RedirectResponse
     {
-        $request->validate([
-            'status' => ['required', 'in:awaiting_payment,paid,processing,packed,shipped,delivered,completed,cancelled,refunded'],
-            'payment_status' => ['required', 'in:unpaid,paid,failed,refunded'],
-            'shipping_tracking_number' => ['nullable', 'string', 'max:100'],
-        ]);
-
         $order = Order::findOrFail($id);
+        $this->authorize('update', $order);
 
         $updateData = [
             'status' => $request->input('status'),

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Warehouse;
 use App\Services\AuditLogService;
+use App\Services\InventoryService;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +15,8 @@ use Illuminate\Support\Facades\Log;
 class PaymentWebhookController extends Controller
 {
     public function __construct(
-        protected MidtransService $midtransService
+        protected MidtransService $midtransService,
+        protected InventoryService $inventoryService
     ) {}
 
     /**
@@ -85,6 +88,17 @@ class PaymentWebhookController extends Controller
             // Find the payment record
             $payment = Payment::where('order_id', $order->id)->firstOrFail();
 
+            // Idempotency guard: skip if payment already in this status
+            if ($payment->status === $internalStatus) {
+                Log::info('Midtrans webhook idempotency: payment already in status', [
+                    'order_number' => $orderId,
+                    'status' => $internalStatus,
+                ]);
+                return;
+            }
+
+            $previousPaymentStatus = $payment->status;
+
             // Update payment status
             $payment->update([
                 'status' => $internalStatus,
@@ -111,7 +125,7 @@ class PaymentWebhookController extends Controller
                 payload: [
                     'order_number' => $order->order_number,
                     'payment_number' => $payment->payment_number,
-                    'old_status' => $payment->getOriginal('status'),
+                    'old_status' => $previousPaymentStatus,
                     'new_status' => $internalStatus,
                     'midtrans_status' => $midtransStatus,
                 ],
@@ -178,26 +192,34 @@ class PaymentWebhookController extends Controller
     }
 
     /**
-     * Restore stock when order is cancelled or refunded
+     * Restore stock when order is cancelled or refunded.
+     * Uses InventoryService->adjustStock() properly instead of non-existent static method.
      *
      * @param Order $order
      * @return void
      */
     protected function restoreOrderStock(Order $order): void
     {
+        $defaultWarehouse = Warehouse::where('is_default', true)->first()
+            ?? Warehouse::first();
+
+        if (!$defaultWarehouse) {
+            Log::error('Cannot restore stock: no warehouse found', ['order_id' => $order->id]);
+            return;
+        }
+
         foreach ($order->items as $item) {
             try {
                 $variant = $item->variant;
-                $variant->increment('stock', $item->quantity);
 
-                // Record inventory movement
-                \App\Services\InventoryService::recordMovement(
+                $this->inventoryService->adjustStock(
                     variant: $variant,
-                    quantity: $item->quantity,
+                    warehouse: $defaultWarehouse,
+                    quantityChange: $item->quantity,
                     type: 'return',
-                    order: $order,
-                    user: null,
-                    notes: 'Stock restored due to order ' . $order->status
+                    reference: $order,
+                    notes: 'Stok dikembalikan — pesanan ' . $order->order_number . ' berstatus ' . $order->status,
+                    performedBy: null
                 );
             } catch (\Throwable $e) {
                 Log::error('Failed to restore stock for cancelled order', [

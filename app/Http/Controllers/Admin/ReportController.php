@@ -19,6 +19,8 @@ class ReportController extends Controller
      */
     public function penjualan(Request $request): View
     {
+        $this->authorize('viewSales', 'report');
+
         $from = $request->filled('dari')
             ? Carbon::parse($request->dari)
             : Carbon::now()->startOfMonth();
@@ -50,6 +52,8 @@ class ReportController extends Controller
      */
     public function inventaris(Request $request): View
     {
+        $this->authorize('viewInventory', 'report');
+
         $warehouses      = Warehouse::all();
         $lowStock        = $this->reporting->getLowStockReport(5);
         $deadStock       = $this->reporting->getDeadStockReport(90);
@@ -71,6 +75,8 @@ class ReportController extends Controller
      */
     public function pembelian(Request $request): View
     {
+        $this->authorize('viewPurchasing', 'report');
+
         $suppliers       = Supplier::where('is_active', true)->orderBy('name')->get();
         $supplierAnalysis = $this->reporting->getSupplierAnalysis();
 
@@ -90,6 +96,8 @@ class ReportController extends Controller
      */
     public function pelanggan(Request $request): View
     {
+        $this->authorize('viewCustomers', 'report');
+
         $from = $request->filled('dari')
             ? Carbon::parse($request->dari)
             : Carbon::now()->startOfMonth();

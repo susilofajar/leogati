@@ -19,6 +19,12 @@ class CheckRole
             return redirect()->route('login')->with('error', 'Silakan masuk terlebih dahulu untuk mengakses halaman ini.');
         }
 
+        // Eager load roles and permissions to prevent N+1 queries
+        // across multiple authorization checks in the same request
+        if (! $request->user()->relationLoaded('roles')) {
+            $request->user()->load('roles.permissions');
+        }
+
         if (! empty($roles) && ! $request->user()->hasRole($roles)) {
             abort(403, 'Anda tidak memiliki hak akses untuk membuka halaman ini.');
         }

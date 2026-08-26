@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreBrandRequest;
+use App\Http\Requests\Admin\UpdateBrandRequest;
 use App\Models\Brand;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class BrandController extends Controller
 {
@@ -16,6 +17,8 @@ class BrandController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Brand::class);
+
         $query = Brand::withCount('products');
 
         if ($request->filled('q')) {
@@ -41,21 +44,19 @@ class BrandController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Brand::class);
+
         return view('admin.merek.create');
     }
 
     /**
      * Simpan merek baru.
      */
-    public function store(Request $request)
+    public function store(StoreBrandRequest $request)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'slug'        => 'nullable|string|max:255|unique:brands,slug',
-            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
-            'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-        ]);
+        $this->authorize('create', Brand::class);
+
+        $validated = $request->validated();
 
         $slug = $request->filled('slug') ? $request->slug : Str::slug($validated['name']);
         $originalSlug = $slug;
@@ -97,21 +98,19 @@ class BrandController extends Controller
      */
     public function edit(Brand $merek)
     {
+        $this->authorize('update', $merek);
+
         return view('admin.merek.edit', ['brand' => $merek]);
     }
 
     /**
      * Perbarui merek.
      */
-    public function update(Request $request, Brand $merek)
+    public function update(UpdateBrandRequest $request, Brand $merek)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'slug'        => ['nullable', 'string', 'max:255', Rule::unique('brands', 'slug')->ignore($merek->id)],
-            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
-            'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-        ]);
+        $this->authorize('update', $merek);
+
+        $validated = $request->validated();
 
         $slug = $request->filled('slug') ? $request->slug : Str::slug($validated['name']);
 
@@ -148,6 +147,8 @@ class BrandController extends Controller
      */
     public function destroy(Brand $merek)
     {
+        $this->authorize('delete', $merek);
+
         if ($merek->products()->count() > 0) {
             return back()->with('error', "Merek '{$merek->name}' tidak dapat dihapus karena masih memiliki {$merek->products()->count()} produk terkait.");
         }

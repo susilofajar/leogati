@@ -16,6 +16,8 @@ class CouponController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Coupon::class);
+
         $query = Coupon::latest('id');
 
         if ($search = $request->query('q')) {
@@ -35,6 +37,8 @@ class CouponController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Coupon::class);
+
         return view('admin.kupon.create');
     }
 
@@ -43,6 +47,8 @@ class CouponController extends Controller
      */
     public function store(StoreCouponRequest $request): RedirectResponse
     {
+        $this->authorize('create', Coupon::class);
+
         $data = $request->validated();
         $data['code'] = strtoupper(trim($data['code']));
         $data['is_active'] = $request->boolean('is_active', true);
@@ -58,6 +64,8 @@ class CouponController extends Controller
      */
     public function edit(Coupon $kupon): View
     {
+        $this->authorize('update', $kupon);
+
         return view('admin.kupon.edit', compact('kupon'));
     }
 
@@ -66,6 +74,8 @@ class CouponController extends Controller
      */
     public function update(StoreCouponRequest $request, Coupon $kupon): RedirectResponse
     {
+        $this->authorize('update', $kupon);
+
         $data = $request->validated();
         $data['code'] = strtoupper(trim($data['code']));
         $data['is_active'] = $request->boolean('is_active', true);
@@ -81,6 +91,8 @@ class CouponController extends Controller
      */
     public function destroy(Coupon $kupon): RedirectResponse
     {
+        $this->authorize('delete', $kupon);
+
         $code = $kupon->code;
         $kupon->delete();
 

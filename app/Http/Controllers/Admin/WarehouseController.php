@@ -13,6 +13,8 @@ class WarehouseController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Inventory::class);
+
         $warehouses = Warehouse::withCount('inventory as total_skus')
             ->orderBy('is_default', 'desc')
             ->orderBy('name')
@@ -26,6 +28,8 @@ class WarehouseController extends Controller
      */
     public function show(Warehouse $gudang)
     {
+        $this->authorize('viewAny', Inventory::class);
+
         $inventoryItems = Inventory::with(['productVariant.product'])
             ->where('warehouse_id', $gudang->id)
             ->paginate(30);

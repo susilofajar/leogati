@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -19,6 +19,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $query = User::with('roles');
 
         if ($request->filled('q')) {
@@ -46,6 +48,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = Role::all();
         return view('admin.pengguna.create', compact('roles'));
     }
@@ -53,15 +57,11 @@ class UserController extends Controller
     /**
      * Simpan pengguna baru.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|max:255|unique:users,email',
-            'password' => ['required', Password::min(8)],
-            'roles'    => 'required|array|min:1',
-            'roles.*'  => 'exists:roles,id',
-        ]);
+        $this->authorize('create', User::class);
+
+        $validated = $request->validated();
 
         $user = User::create([
             'name'     => $validated['name'],
@@ -89,6 +89,8 @@ class UserController extends Controller
      */
     public function edit(User $pengguna)
     {
+        $this->authorize('update', $pengguna);
+
         $pengguna->load('roles');
         $roles = Role::all();
         return view('admin.pengguna.edit', ['user' => $pengguna, 'roles' => $roles]);
@@ -97,15 +99,11 @@ class UserController extends Controller
     /**
      * Perbarui data pengguna & perannya.
      */
-    public function update(Request $request, User $pengguna)
+    public function update(UpdateUserRequest $request, User $pengguna)
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($pengguna->id)],
-            'password' => ['nullable', Password::min(8)],
-            'roles'    => 'required|array|min:1',
-            'roles.*'  => 'exists:roles,id',
-        ]);
+        $this->authorize('update', $pengguna);
+
+        $validated = $request->validated();
 
         $updateData = [
             'name'  => $validated['name'],
@@ -137,6 +135,8 @@ class UserController extends Controller
      */
     public function destroy(User $pengguna)
     {
+        $this->authorize('delete', $pengguna);
+
         if ($pengguna->id === Auth::id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }

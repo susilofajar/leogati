@@ -70,6 +70,7 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'manage_purchases', 'display_name' => 'Kelola Pembelian (PO)', 'description' => 'Dapat membuat PO dan penerimaan barang.'],
             ['name' => 'manage_warranties', 'display_name' => 'Kelola Garansi & Klaim', 'description' => 'Dapat memproses klaim dan status garansi produk.'],
             ['name' => 'manage_promotions', 'display_name' => 'Kelola Promo & Kupon', 'description' => 'Dapat membuat diskon dan kupon belanja.'],
+            ['name' => 'manage_reviews', 'display_name' => 'Kelola & Moderasi Ulasan', 'description' => 'Dapat menyetujui, menyembunyikan, dan membalas ulasan produk.'],
             ['name' => 'view_reports', 'display_name' => 'Lihat Laporan & Analitik', 'description' => 'Dapat mengakses laporan penjualan dan keuangan.'],
             ['name' => 'manage_settings', 'display_name' => 'Kelola Pengaturan Sistem', 'description' => 'Dapat mengubah konfigurasi platform.'],
         ];
@@ -95,6 +96,7 @@ class RoleAndPermissionSeeder extends Seeder
             $permissionModels['manage_brands']->id,
             $permissionModels['manage_orders']->id,
             $permissionModels['manage_promotions']->id,
+            $permissionModels['manage_reviews']->id,
             $permissionModels['manage_warranties']->id,
             $permissionModels['view_reports']->id,
         ]);

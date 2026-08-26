@@ -23,6 +23,8 @@ class InventoryController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Inventory::class);
+
         $query = ProductVariant::with(['product', 'inventoryRecords.warehouse'])
             ->whereHas('product', fn($q) => $q->where('is_active', true));
 
@@ -50,6 +52,8 @@ class InventoryController extends Controller
      */
     public function movements(ProductVariant $varian)
     {
+        $this->authorize('viewAny', Inventory::class);
+
         $movements = InventoryMovement::with(['warehouse', 'performer'])
             ->where('product_variant_id', $varian->id)
             ->latest()
@@ -63,6 +67,8 @@ class InventoryController extends Controller
      */
     public function adjustForm(ProductVariant $varian)
     {
+        $this->authorize('adjust', Inventory::class);
+
         $warehouses = Warehouse::where('is_active', true)->get();
         return view('admin.inventaris.sesuaikan', compact('varian', 'warehouses'));
     }
@@ -72,6 +78,8 @@ class InventoryController extends Controller
      */
     public function adjust(AdjustInventoryRequest $request, ProductVariant $varian)
     {
+        $this->authorize('adjust', Inventory::class);
+
         $warehouse = Warehouse::findOrFail($request->warehouse_id);
 
         try {

@@ -11,6 +11,8 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Supplier::class);
+
         $query = Supplier::query();
 
         if ($search = $request->get('cari')) {
@@ -30,11 +32,15 @@ class SupplierController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Supplier::class);
+
         return view('admin.supplier.create');
     }
 
     public function store(StoreSupplierRequest $request)
     {
+        $this->authorize('create', Supplier::class);
+
         $data = $request->validated();
         $data['code'] = Supplier::generateCode();
         $data['is_active'] = $request->boolean('is_active', true);
@@ -47,17 +53,23 @@ class SupplierController extends Controller
 
     public function show(Supplier $supplier)
     {
+        $this->authorize('view', $supplier);
+
         $supplier->load('purchaseOrders.warehouse');
         return view('admin.supplier.show', compact('supplier'));
     }
 
     public function edit(Supplier $supplier)
     {
+        $this->authorize('update', $supplier);
+
         return view('admin.supplier.edit', compact('supplier'));
     }
 
     public function update(StoreSupplierRequest $request, Supplier $supplier)
     {
+        $this->authorize('update', $supplier);
+
         $data = $request->validated();
         $data['is_active'] = $request->boolean('is_active', true);
 
@@ -69,6 +81,8 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier)
     {
+        $this->authorize('delete', $supplier);
+
         // Cegah penghapusan jika supplier memiliki PO
         if ($supplier->purchaseOrders()->exists()) {
             return back()->withErrors(['supplier' => 'Supplier tidak dapat dihapus karena memiliki riwayat Purchase Order.']);

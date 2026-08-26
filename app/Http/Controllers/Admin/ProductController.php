@@ -29,6 +29,8 @@ class ProductController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Product::class);
+
         $query = Product::with(['category', 'brand', 'variants', 'primaryImage']);
 
         if ($search = $request->input('q')) {
@@ -60,6 +62,8 @@ class ProductController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Product::class);
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
         $specGroups = SpecificationGroup::with('attributes')->orderBy('sort_order')->get();
@@ -72,6 +76,8 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request): RedirectResponse
     {
+        $this->authorize('create', Product::class);
+
         DB::transaction(function () use ($request) {
             $slug = Str::slug($request->name);
             // Ensure unique slug
@@ -133,6 +139,8 @@ class ProductController extends Controller
      */
     public function edit(Product $produk): View
     {
+        $this->authorize('update', $produk);
+
         $product = $produk->load(['category', 'brand', 'variants', 'specifications', 'images']);
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
@@ -146,6 +154,8 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $produk): RedirectResponse
     {
+        $this->authorize('update', $produk);
+
         DB::transaction(function () use ($request, $produk) {
             $produk->update([
                 'category_id' => $request->category_id,
@@ -230,6 +240,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $produk): RedirectResponse
     {
+        $this->authorize('delete', $produk);
+
         $name = $produk->name;
         $produk->delete();
 

@@ -20,6 +20,8 @@ class ReviewModerationController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Review::class);
+
         $query = Review::with(['product', 'user', 'order'])->latest('id');
 
         if ($request->has('approved')) {
@@ -49,6 +51,8 @@ class ReviewModerationController extends Controller
      */
     public function show(Review $ulasan): View
     {
+        $this->authorize('view', $ulasan);
+
         $review = $ulasan->load(['product.primaryImage', 'user', 'order']);
 
         return view('admin.ulasan.show', compact('review'));
@@ -59,6 +63,8 @@ class ReviewModerationController extends Controller
      */
     public function toggleApproval(Review $ulasan): RedirectResponse
     {
+        $this->authorize('moderate', $ulasan);
+
         $ulasan->update(['is_approved' => ! $ulasan->is_approved]);
         $statusText = $ulasan->is_approved ? 'disetujui dan ditampilkan ke publik' : 'disembunyikan dari publik';
 
@@ -71,6 +77,8 @@ class ReviewModerationController extends Controller
      */
     public function reply(Request $request, Review $ulasan): RedirectResponse
     {
+        $this->authorize('reply', $ulasan);
+
         $request->validate([
             'admin_reply' => ['required', 'string', 'min:5', 'max:2000'],
         ], [

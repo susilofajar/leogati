@@ -21,6 +21,8 @@ class WarrantyClaimController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', WarrantyClaim::class);
+
         $query = WarrantyClaim::with(['serialNumber.productVariant.product', 'customer', 'order'])
             ->latest('submitted_at');
 
@@ -52,6 +54,8 @@ class WarrantyClaimController extends Controller
      */
     public function show(WarrantyClaim $garansi): View
     {
+        $this->authorize('view', $garansi);
+
         $claim = $garansi->load(['serialNumber.productVariant.product', 'customer', 'order']);
         $statuses = WarrantyClaim::STATUS_LABELS;
 
@@ -63,6 +67,8 @@ class WarrantyClaimController extends Controller
      */
     public function updateStatus(UpdateWarrantyClaimRequest $request, WarrantyClaim $garansi): RedirectResponse
     {
+        $this->authorize('update', $garansi);
+
         $this->warrantyService->updateClaimStatus(
             $garansi,
             $request->input('status'),

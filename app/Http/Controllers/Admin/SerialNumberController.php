@@ -13,6 +13,8 @@ class SerialNumberController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', \App\Models\Inventory::class);
+
         $query = SerialNumber::with([
             'productVariant.product',
             'warehouse',
@@ -39,6 +41,8 @@ class SerialNumberController extends Controller
      */
     public function show(SerialNumber $nomor_seri)
     {
+        $this->authorize('viewAny', \App\Models\Inventory::class);
+
         $nomor_seri->load([
             'productVariant.product',
             'warehouse',

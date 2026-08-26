@@ -22,6 +22,8 @@ class PurchaseOrderController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', PurchaseOrder::class);
+
         $query = PurchaseOrder::with(['supplier', 'warehouse', 'creator']);
 
         if ($status = $request->get('status')) {
@@ -40,6 +42,8 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
+        $this->authorize('create', PurchaseOrder::class);
+
         $suppliers  = Supplier::where('is_active', true)->orderBy('name')->get();
         $warehouses = Warehouse::where('is_active', true)->orderBy('name')->get();
         $variants   = ProductVariant::with('product')
@@ -51,6 +55,8 @@ class PurchaseOrderController extends Controller
 
     public function store(StorePurchaseOrderRequest $request)
     {
+        $this->authorize('create', PurchaseOrder::class);
+
         $validated = $request->validated();
 
         $po = PurchaseOrder::create([
@@ -83,6 +89,8 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $pembelian)
     {
+        $this->authorize('view', $pembelian);
+
         $pembelian->load(['supplier', 'warehouse', 'creator', 'items.productVariant.product']);
 
         return view('admin.pembelian.show', compact('pembelian'));
@@ -93,6 +101,8 @@ class PurchaseOrderController extends Controller
      */
     public function markSent(PurchaseOrder $pembelian)
     {
+        $this->authorize('send', $pembelian);
+
         if ($pembelian->status !== 'draft') {
             return back()->withErrors(['status' => 'Hanya PO berstatus Draft yang dapat dikirim ke supplier.']);
         }
@@ -107,6 +117,8 @@ class PurchaseOrderController extends Controller
      */
     public function receiveGoods(ReceiveGoodsRequest $request, PurchaseOrder $pembelian)
     {
+        $this->authorize('receive', $pembelian);
+
         if (! in_array($pembelian->status, ['sent', 'partial'])) {
             return back()->withErrors(['status' => 'Penerimaan barang hanya dapat dilakukan untuk PO yang telah dikirim ke supplier.']);
         }
@@ -153,6 +165,8 @@ class PurchaseOrderController extends Controller
      */
     public function cancel(PurchaseOrder $pembelian)
     {
+        $this->authorize('cancel', $pembelian);
+
         if (! in_array($pembelian->status, ['draft', 'sent'])) {
             return back()->withErrors(['status' => 'Hanya PO berstatus Draft atau Dikirim yang dapat dibatalkan.']);
         }

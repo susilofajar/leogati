@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCategoryRequest;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -16,6 +17,8 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Category::class);
+
         $query = Category::with(['parent'])->withCount('products');
 
         if ($request->filled('q')) {
@@ -41,6 +44,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Category::class);
+
         $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
         $availableIcons = Category::getAvailableIcons();
         return view('admin.kategori.create', compact('parentCategories', 'availableIcons'));
@@ -49,17 +54,11 @@ class CategoryController extends Controller
     /**
      * Simpan kategori baru.
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'slug'        => 'nullable|string|max:255|unique:categories,slug',
-            'parent_id'   => 'nullable|exists:categories,id',
-            'description' => 'nullable|string',
-            'icon'        => 'nullable|string|max:50',
-            'sort_order'  => 'nullable|integer|min:0',
-            'is_active'   => 'nullable|boolean',
-        ]);
+        $this->authorize('create', Category::class);
+
+        $validated = $request->validated();
 
         $slug = $request->filled('slug') ? $request->slug : Str::slug($validated['name']);
         // Ensure slug is unique
@@ -95,6 +94,8 @@ class CategoryController extends Controller
      */
     public function edit(Category $kategori)
     {
+        $this->authorize('update', $kategori);
+
         $parentCategories = Category::whereNull('parent_id')
             ->where('id', '!=', $kategori->id)
             ->orderBy('name')
@@ -111,17 +112,11 @@ class CategoryController extends Controller
     /**
      * Perbarui kategori.
      */
-    public function update(Request $request, Category $kategori)
+    public function update(UpdateCategoryRequest $request, Category $kategori)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'slug'        => ['nullable', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($kategori->id)],
-            'parent_id'   => ['nullable', 'exists:categories,id', Rule::notIn([$kategori->id])],
-            'description' => 'nullable|string',
-            'icon'        => 'nullable|string|max:50',
-            'sort_order'  => 'nullable|integer|min:0',
-            'is_active'   => 'nullable|boolean',
-        ]);
+        $this->authorize('update', $kategori);
+
+        $validated = $request->validated();
 
         $slug = $request->filled('slug') ? $request->slug : Str::slug($validated['name']);
 
@@ -151,6 +146,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $kategori)
     {
+        $this->authorize('delete', $kategori);
+
         if ($kategori->products()->count() > 0) {
             return back()->with('error', "Kategori '{$kategori->name}' tidak dapat dihapus karena masih memiliki {$kategori->products()->count()} produk terkait.");
         }
