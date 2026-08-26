@@ -163,6 +163,13 @@ Route::middleware('auth')->group(function () {
 */
 Route::post('/webhook/midtrans', [PaymentWebhookController::class, 'handleMidtransWebhook'])
     ->name('webhook.midtrans');
+Route::get('/webhook/midtrans', function () {
+    return response()->json([
+        'status'  => 'active',
+        'service' => 'LEOGATISTORE Midtrans Payment Webhook',
+        'message' => 'Endpoint ini hanya menerima notifikasi POST otomatis dari server Midtrans.',
+    ]);
+});
 
 /*
 |--------------------------------------------------------------------------
