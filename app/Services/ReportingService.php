@@ -232,7 +232,7 @@ class ReportingService
     public function getPurchaseReport(array $filters = []): \Illuminate\Database\Eloquent\Builder
     {
         $query = PurchaseOrder::with(['supplier', 'items'])
-            ->latest('order_date');
+            ->latest('created_at');
 
         if (!empty($filters['supplier_id'])) {
             $query->where('supplier_id', $filters['supplier_id']);
@@ -242,11 +242,20 @@ class ReportingService
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['from']) && !empty($filters['to'])) {
-            $query->whereBetween('order_date', [
-                Carbon::parse($filters['from'])->startOfDay(),
-                Carbon::parse($filters['to'])->endOfDay(),
-            ]);
+        if (!empty($filters['from'])) {
+            $query->whereDate(
+                'created_at',
+                '>=',
+                Carbon::parse($filters['from'])->toDateString()
+            );
+        }
+
+        if (!empty($filters['to'])) {
+            $query->whereDate(
+                'created_at',
+                '<=',
+                Carbon::parse($filters['to'])->toDateString()
+            );
         }
 
         return $query;

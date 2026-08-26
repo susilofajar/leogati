@@ -1,105 +1,438 @@
 @extends('layouts.admin')
 
 @section('title', 'Edit Supplier — ' . $supplier->name)
+@section('header_title', 'Edit Supplier')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex align-items-center mb-4">
-        <a href="{{ route('admin.supplier.index') }}" class="btn btn-sm btn-outline-secondary me-3">
-            <i class="bi bi-arrow-left"></i>
-        </a>
-        <div>
-            <h1 class="h3 mb-0 fw-bold">Edit Data Supplier</h1>
-            <p class="text-muted mb-0">Kode: <span class="font-monospace fw-bold text-primary">{{ $supplier->code }}</span></p>
+<div class="space-y-6">
+
+    {{-- HEADER --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-3">
+
+            <a href="{{ route('admin.supplier.index') }}"
+               class="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200
+                      text-slate-500 hover:text-[#0B5CFF] hover:border-[#0B5CFF] transition shadow-2xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 19l-7-7 7-7"/>
+                </svg>
+            </a>
+
+            <div>
+                <h2 class="text-xl font-extrabold text-slate-900">
+                    Edit Data Supplier
+                </h2>
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Kode:
+                    <span class="font-mono font-bold text-[#0B5CFF]">
+                        {{ $supplier->code }}
+                    </span>
+                </p>
+            </div>
+
         </div>
     </div>
 
+
+    {{-- VALIDATION ERROR --}}
     @if($errors->any())
-    <div class="alert alert-danger mb-4">
-        <ul class="mb-0">@foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach</ul>
-    </div>
-    @endif
+        <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4">
+            <div class="flex items-start gap-3">
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4">
-                    <form method="POST" action="{{ route('admin.supplier.update', $supplier) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Nama Perusahaan / Supplier <span class="text-danger">*</span></label>
-                            <input type="text" name="name" value="{{ old('name', $supplier->name) }}" class="form-control @error('name') is-invalid @enderror" required>
-                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Nama PIC (Kontak Person)</label>
-                                <input type="text" name="pic_name" value="{{ old('pic_name', $supplier->pic_name) }}" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Nomor Telepon / WhatsApp</label>
-                                <input type="text" name="phone" value="{{ old('phone', $supplier->phone) }}" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Email</label>
-                                <input type="email" name="email" value="{{ old('email', $supplier->email) }}" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">NPWP</label>
-                                <input type="text" name="npwp" value="{{ old('npwp', $supplier->npwp) }}" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Alamat Lengkap</label>
-                            <textarea name="address" rows="2" class="form-control">{{ old('address', $supplier->address) }}</textarea>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Kota</label>
-                                <input type="text" name="city" value="{{ old('city', $supplier->city) }}" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Provinsi</label>
-                                <input type="text" name="province" value="{{ old('province', $supplier->province) }}" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Kode Pos</label>
-                                <input type="text" name="postal_code" value="{{ old('postal_code', $supplier->postal_code) }}" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Syarat Pembayaran</label>
-                                <input type="text" name="payment_terms" value="{{ old('payment_terms', $supplier->payment_terms) }}" class="form-control">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Status Keaktifan</label>
-                                <div class="form-check form-switch mt-2">
-                                    <input type="checkbox" name="is_active" value="1" class="form-check-input" id="is_active" {{ $supplier->is_active ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="is_active">Aktif</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i> Perbarui Supplier
-                            </button>
-                            <a href="{{ route('admin.supplier.index') }}" class="btn btn-outline-secondary">Batal</a>
-                        </div>
-                    </form>
+                <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14A2 2 0 003.82 21h16.36a2 2 0 001.71-3.14l-8.18-14a2 2 0 00-3.42 0z"/>
+                    </svg>
                 </div>
+
+                <div>
+                    <h3 class="text-xs font-extrabold text-rose-800">
+                        Data belum dapat diperbarui
+                    </h3>
+
+                    <ul class="mt-1 text-xs text-rose-700 space-y-0.5 list-disc list-inside">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+
             </div>
         </div>
-    </div>
+    @endif
+
+
+    {{-- FORM --}}
+    <form method="POST" action="{{ route('admin.supplier.update', $supplier) }}">
+        @csrf
+        @method('PUT')
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {{-- INFORMASI SUPPLIER --}}
+            <div class="lg:col-span-2">
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+
+                    {{-- CARD HEADER --}}
+                    <div class="px-5 py-4 border-b border-slate-100">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2m-2 0h-2M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">
+                                    Informasi Supplier
+                                </h3>
+
+                                <p class="text-[11px] text-slate-500">
+                                    Perbarui informasi perusahaan dan kontak supplier.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- FORM BODY --}}
+                    <div class="p-5 space-y-5">
+
+                        {{-- NAMA --}}
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Nama Perusahaan / Supplier
+                                <span class="text-rose-500">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                value="{{ old('name', $supplier->name) }}"
+                                required
+                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                       focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition
+                                       @error('name') border-rose-400 bg-rose-50 @enderror">
+
+                            @error('name')
+                                <p class="mt-1.5 text-[11px] text-rose-600">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+
+                        {{-- PIC + TELEPON --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Nama PIC / Kontak Person
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="pic_name"
+                                    value="{{ old('pic_name', $supplier->pic_name) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Nomor Telepon / WhatsApp
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value="{{ old('phone', $supplier->phone) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                        </div>
+
+
+                        {{-- EMAIL + NPWP --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value="{{ old('email', $supplier->email) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    NPWP
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="npwp"
+                                    value="{{ old('npwp', $supplier->npwp) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                        </div>
+
+
+                        {{-- ALAMAT --}}
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Alamat Lengkap
+                            </label>
+
+                            <textarea
+                                name="address"
+                                rows="3"
+                                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                       focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">{{ old('address', $supplier->address) }}</textarea>
+                        </div>
+
+
+                        {{-- LOKASI --}}
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Kota
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="city"
+                                    value="{{ old('city', $supplier->city) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Provinsi
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="province"
+                                    value="{{ old('province', $supplier->province) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                                    Kode Pos
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="postal_code"
+                                    value="{{ old('postal_code', $supplier->postal_code) }}"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                           focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            {{-- SIDEBAR --}}
+            <div class="space-y-6">
+
+                {{-- PAYMENT --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+
+                    <div class="px-5 py-4 border-b border-slate-100">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 8c-1.5 0-3 .8-3 2s1.5 2 3 2 3 .8 3 2-1.5 2-3 2m0-10V6m0 12v-2m8-4a8 8 0 11-16 0 8 8 0 0116 0z"/>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-extrabold text-slate-900">
+                                    Pembayaran
+                                </h3>
+
+                                <p class="text-[11px] text-slate-500">
+                                    Pengaturan pembayaran supplier.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="p-5">
+
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Syarat Pembayaran
+                        </label>
+
+                        <input
+                            type="text"
+                            name="payment_terms"
+                            value="{{ old('payment_terms', $supplier->payment_terms) }}"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs
+                                   focus:outline-none focus:border-[#0B5CFF] focus:bg-white focus:ring-2 focus:ring-blue-50 transition">
+
+                        <p class="mt-2 text-[11px] text-slate-500">
+                            Contoh: NET30, COD, CBD.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {{-- STATUS --}}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+
+                    <div class="px-5 py-4 border-b border-slate-100">
+
+                        <h3 class="text-sm font-extrabold text-slate-900">
+                            Status Supplier
+                        </h3>
+
+                        <p class="text-[11px] text-slate-500 mt-0.5">
+                            Tentukan apakah supplier dapat digunakan untuk PO.
+                        </p>
+
+                    </div>
+
+                    <div class="p-5">
+
+                        <label class="flex items-center justify-between cursor-pointer group">
+
+                            <div>
+                                <div class="text-xs font-bold text-slate-800">
+                                    Supplier Aktif
+                                </div>
+
+                                <div class="text-[11px] text-slate-500 mt-0.5">
+                                    Supplier dapat dipilih saat membuat PO.
+                                </div>
+                            </div>
+
+                            <div class="relative">
+
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    value="1"
+                                    id="is_active"
+                                    class="peer sr-only"
+                                    {{ old('is_active', $supplier->is_active) ? 'checked' : '' }}>
+
+                                <div class="w-10 h-5 bg-slate-200 rounded-full peer-checked:bg-[#0B5CFF] transition"></div>
+
+                                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm
+                                            peer-checked:translate-x-5 transition"></div>
+
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                {{-- INFO KODE --}}
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+
+                    <div class="flex items-start gap-3">
+
+                        <div class="w-8 h-8 rounded-lg bg-white text-[#0B5CFF] flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 1010 10A10 10 0 0012 2z"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-extrabold text-blue-900">
+                                Kode Supplier
+                            </h4>
+
+                            <p class="text-[11px] text-blue-700 mt-1">
+                                Kode supplier digunakan sebagai identitas internal dan tidak diubah dari halaman ini.
+                            </p>
+
+                            <div class="mt-3 inline-flex items-center px-2.5 py-1 rounded-lg bg-white border border-blue-100">
+                                <span class="font-mono text-xs font-bold text-[#0B5CFF]">
+                                    {{ $supplier->code }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- ACTION --}}
+                <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5">
+
+                    <div class="flex flex-col gap-2">
+
+                        <button
+                            type="submit"
+                            class="w-full px-4 py-2.5 bg-[#0B5CFF] hover:bg-[#063B9E] text-white text-xs font-bold rounded-xl
+                                   transition shadow-xs flex items-center justify-center gap-2">
+
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M5 13l4 4L19 7"/>
+                            </svg>
+
+                            Perbarui Supplier
+                        </button>
+
+                        <a
+                            href="{{ route('admin.supplier.index') }}"
+                            class="w-full px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl
+                                   transition text-center">
+
+                            Batal
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
 </div>
 @endsection
