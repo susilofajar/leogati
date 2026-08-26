@@ -20,7 +20,7 @@ class ComparisonController extends Controller
                 'brand',
                 'category',
                 'defaultVariant',
-                'specifications.specificationAttribute.group',
+                'specifications.attribute.group',
             ])
             ->whereIn('id', $compareIds)
             ->get();
@@ -28,20 +28,26 @@ class ComparisonController extends Controller
 
         // Kumpulkan semua grup spesifikasi dari produk yang dibandingkan
         $specGroups = [];
+
         foreach ($products as $product) {
             foreach ($product->specifications as $spec) {
-                $group = $spec->specificationAttribute->group->name ?? 'Lainnya';
-                $attr = $spec->specificationAttribute->name ?? '';
+                $group = $spec->attribute->group->name ?? 'Lainnya';
+                $attr = $spec->attribute->name ?? '';
+
                 if (!isset($specGroups[$group])) {
                     $specGroups[$group] = [];
                 }
+
                 if (!in_array($attr, $specGroups[$group])) {
                     $specGroups[$group][] = $attr;
                 }
             }
         }
 
-        return view('products.compare', compact('products', 'specGroups'));
+        return view('products.compare', compact(
+            'products',
+            'specGroups'
+        ));
     }
 
     /**
@@ -63,7 +69,11 @@ class ComparisonController extends Controller
                     'message' => 'Maksimal 4 produk dapat dibandingkan.',
                 ], 422);
             }
-            return back()->with('error', 'Maksimal 4 produk dapat dibandingkan.');
+
+            return back()->with(
+                'error',
+                'Maksimal 4 produk dapat dibandingkan.'
+            );
         }
 
         if (!in_array($productId, $compareIds)) {
@@ -78,7 +88,10 @@ class ComparisonController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Produk ditambahkan ke daftar perbandingan.');
+        return back()->with(
+            'success',
+            'Produk ditambahkan ke daftar perbandingan.'
+        );
     }
 
     /**
@@ -87,7 +100,14 @@ class ComparisonController extends Controller
     public function remove(Request $request, $id)
     {
         $compareIds = session('compare_products', []);
-        $compareIds = array_values(array_filter($compareIds, fn($v) => $v != (int) $id));
+
+        $compareIds = array_values(
+            array_filter(
+                $compareIds,
+                fn ($v) => $v != (int) $id
+            )
+        );
+
         session(['compare_products' => $compareIds]);
 
         if ($request->expectsJson()) {
@@ -97,6 +117,9 @@ class ComparisonController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Produk dihapus dari daftar perbandingan.');
+        return back()->with(
+            'success',
+            'Produk dihapus dari daftar perbandingan.'
+        );
     }
 }

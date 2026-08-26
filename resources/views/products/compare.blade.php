@@ -156,8 +156,8 @@
                                 @foreach($products as $product)
                                     @php
                                         $val = '-';
-                                        foreach($product->specifications as $spec) {
-                                            if (($spec->specificationAttribute->name ?? '') === $attrName) {
+                                        foreach ($product->specifications as $spec) {
+                                            if (($spec->attribute->name ?? '') === $attrName) {
                                                 $val = $spec->value;
                                                 break;
                                             }
