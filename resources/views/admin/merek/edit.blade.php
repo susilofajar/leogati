@@ -16,7 +16,7 @@
     </div>
 
     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs">
-        <form action="{{ route('admin.merek.update', $brand->id) }}" method="POST" class="space-y-4 text-xs">
+        <form action="{{ route('admin.merek.update', $brand->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
             @csrf
             @method('PUT')
 
@@ -34,6 +34,38 @@
                         class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-slate-900 focus:outline-hidden focus:border-[#0B5CFF] focus:bg-white transition @error('slug') border-rose-500 @enderror">
                     @error('slug') <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+
+            <!-- LOGO PREVIEW & UPLOAD -->
+            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="block font-bold text-slate-700">Logo Resmi Brand Saat Ini:</label>
+                        <span class="text-[10px] text-slate-400">Tampil di etalase beranda dan katalog</span>
+                    </div>
+                    <div class="h-9 px-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs">
+                        {!! $brand->renderLogo('h-6 w-auto max-w-[100px] object-contain') !!}
+                    </div>
+                </div>
+
+                @if(auth()->user() && auth()->user()->isSuperAdmin())
+                    <div class="pt-2 border-t border-slate-200/80">
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="logo" class="block font-bold text-slate-700">Ganti Berkas Logo:</label>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                Khusus Super Admin
+                            </span>
+                        </div>
+                        <input type="file" name="logo" id="logo" accept="image/*"
+                            class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium text-slate-900 focus:outline-hidden focus:border-[#0B5CFF]">
+                        <p class="text-[10px] text-slate-400 mt-1">Biarkan kosong jika tidak ingin mengubah logo saat ini.</p>
+                        @error('logo') <p class="text-rose-600 text-[11px] mt-1">{{ $message }}</p> @enderror
+                    </div>
+                @else
+                    <div class="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500">
+                        🔒 Penggantian logo resmi brand dibatasi khusus untuk pengguna berwenang <strong>Super Admin</strong>.
+                    </div>
+                @endif
             </div>
 
             <div>

@@ -7,6 +7,27 @@
 
     <title>{{ config('app.name', 'LEOGATISTORE') }} — @yield('title', 'Pusat Laptop, Komputer & Komponen PC Resmi')</title>
     <meta name="description" content="@yield('meta_description', 'LEOGATISTORE adalah pusat belanja laptop, PC rakitan, komponen komputer, monitor, dan aksesoris teknologi bergaransi resmi di Indonesia.')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/tembak ungu rambut grey.png') }}">
+
+    <!-- OpenGraph / Facebook -->
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="LEOGATISTORE">
+    <meta property="og:title" content="@yield('title', 'LEOGATISTORE — Pusat Komputer & Laptop')">
+    <meta property="og:description" content="@yield('meta_description', 'Pusat belanja laptop, komputer, dan komponen PC bergaransi resmi di Indonesia.')">
+    <meta property="og:url" content="@yield('canonical', url()->current())">
+    <meta property="og:image" content="@yield('og_image', asset('images/og-default.jpg'))">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'LEOGATISTORE — Pusat Komputer & Laptop')">
+    <meta name="twitter:description" content="@yield('meta_description', 'Pusat belanja laptop, komputer, dan komponen PC bergaransi resmi di Indonesia.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-default.jpg'))">
+
+    <!-- Structured Data (Schema.org JSON-LD) -->
+    @yield('schema_json')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +55,7 @@
                     100% Produk Original & Bergaransi Resmi
                 </span>
                 <span class="text-slate-600">|</span>
-                <span class="text-slate-400">Pusat Layanan: 0812-3456-7890</span>
+                <span class="text-slate-400">Pusat Layanan: 0813-2589-2020</span>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('warranty.check') }}" class="hover:text-white transition flex items-center">
@@ -49,7 +70,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- MAIN NAVBAR -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -61,16 +82,8 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
 
-                    <a href="{{ route('home') }}" class="flex items-center space-x-2.5">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-linear-to-br from-[#0B5CFF] to-[#071A3D] flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#071A3D]">LEOGATI<span class="text-[#0B5CFF]">STORE</span></span>
-                            <p class="hidden sm:block text-[10px] tracking-wider font-semibold text-slate-500 uppercase -mt-1">Technology Commerce</p>
-                        </div>
+                    <a href="{{ route('home') }}" class="flex items-center group">
+                        <img src="{{ asset('images/logo/logo.png') }}" alt="{{ config('app.name', 'LEOGATISTORE') }}" class="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-102">
                     </a>
                 </div>
 
@@ -271,12 +284,9 @@
             x-show="mobileMenuOpen" x-transition:enter="transform transition ease-out duration-300" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full">
             
             <div class="p-4 bg-[#071A3D] text-white flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-[#0B5CFF] flex items-center justify-center font-black text-sm">
-                        L
-                    </div>
-                    <span class="font-extrabold text-base tracking-wide">LEOGATI<span class="text-[#0B5CFF]">STORE</span></span>
-                </div>
+                <a href="{{ route('home') }}" class="flex items-center">
+                    <img src="{{ asset('images/logo/logo putih.png') }}" alt="{{ config('app.name', 'LEOGATISTORE') }}" class="h-7 w-auto object-contain">
+                </a>
                 <button @click="mobileMenuOpen = false" class="text-slate-400 hover:text-white p-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -436,17 +446,14 @@
                 
                 <!-- BRAND INFO -->
                 <div class="space-y-4">
-                    <div class="flex items-center space-x-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-linear-to-br from-[#0B5CFF] to-blue-700 flex items-center justify-center text-white font-bold shadow-xs">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </div>
-                        <span class="text-xl font-extrabold text-white">LEOGATI<span class="text-[#0B5CFF]">STORE</span></span>
-                    </div>
+                    <a href="{{ route('home') }}" class="inline-block">
+                        <img src="{{ asset('images/logo/logo putih.png') }}" alt="{{ config('app.name', 'LEOGATISTORE') }}" class="h-9 sm:h-10 w-auto object-contain">
+                    </a>
                     <p class="text-xs leading-relaxed text-slate-400">
                         Platform e-commerce teknologi terintegrasi nomor satu di Indonesia. Menyediakan laptop, komponen PC, perakitan custom PC, dan aksesoris resmi bergaransi penuh.
                     </p>
                     <div class="text-xs text-slate-400 space-y-1.5">
-                        <p class="flex items-center"><svg class="w-4 h-4 mr-2 text-[#0B5CFF] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Jakarta Pusat, DKI Jakarta, Indonesia</p>
+                        <p class="flex items-center"><svg class="w-4 h-4 mr-2 text-[#0B5CFF] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Kendal, Jawa Tengah, Indonesia</p>
                         <p class="flex items-center"><svg class="w-4 h-4 mr-2 text-[#0B5CFF] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> cs@leogati.store</p>
                     </div>
                 </div>

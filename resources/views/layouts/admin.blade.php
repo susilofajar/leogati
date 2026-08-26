@@ -7,6 +7,9 @@
 
     <title>Panel Admin — {{ config('app.name', 'LEOGATISTORE') }}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/tembak ungu rambut grey.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,14 +39,9 @@
         
         <!-- SIDEBAR BRAND -->
         <div class="h-16 flex items-center justify-between px-5 bg-[#040F24] border-b border-slate-800">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 rounded-xl bg-[#0B5CFF] flex items-center justify-center text-white font-black text-sm shadow-xs">
-                    L
-                </div>
-                <div>
-                    <span class="text-base font-bold text-white tracking-wide">LEOGATI<span class="text-[#0B5CFF]">STORE</span></span>
-                    <span class="block text-[10px] uppercase tracking-wider text-blue-400 font-semibold">Panel Operasional</span>
-                </div>
+            <a href="{{ route('admin.dashboard') }}" class="flex flex-col">
+                <img src="{{ asset('images/logo/logo putih.png') }}" alt="{{ config('app.name', 'LEOGATISTORE') }}" class="h-6.5 w-auto object-contain">
+                <span class="text-[9px] uppercase tracking-widest text-blue-400 font-semibold mt-1">Panel Operasional</span>
             </a>
             <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white p-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

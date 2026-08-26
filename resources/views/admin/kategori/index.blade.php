@@ -67,12 +67,20 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($categories as $category)
                         <tr class="hover:bg-slate-50/80 transition">
-                            <td class="px-5 py-4 font-bold text-slate-900">
-                                <div class="flex items-center gap-2">
+                            <td class="px-5 py-3.5 font-bold text-slate-900">
+                                <div class="flex items-center gap-2.5">
                                     @if($category->parent_id)
                                         <span class="text-slate-300 ml-2">&boxur;</span>
                                     @endif
-                                    <span>{{ $category->name }}</span>
+                                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-[#0B5CFF] border border-blue-100 flex items-center justify-center shrink-0">
+                                        {!! $category->renderIcon('w-4 h-4') !!}
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-900">{{ $category->name }}</span>
+                                        @if($category->icon)
+                                            <span class="block text-[10px] text-slate-400 font-mono font-normal">{{ $category->icon }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-5 py-4 font-mono text-slate-500">

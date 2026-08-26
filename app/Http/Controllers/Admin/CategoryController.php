@@ -42,7 +42,8 @@ class CategoryController extends Controller
     public function create()
     {
         $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
-        return view('admin.kategori.create', compact('parentCategories'));
+        $availableIcons = Category::getAvailableIcons();
+        return view('admin.kategori.create', compact('parentCategories', 'availableIcons'));
     }
 
     /**
@@ -55,6 +56,7 @@ class CategoryController extends Controller
             'slug'        => 'nullable|string|max:255|unique:categories,slug',
             'parent_id'   => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
+            'icon'        => 'nullable|string|max:50',
             'sort_order'  => 'nullable|integer|min:0',
             'is_active'   => 'nullable|boolean',
         ]);
@@ -72,6 +74,7 @@ class CategoryController extends Controller
             'slug'        => $slug,
             'parent_id'   => $validated['parent_id'] ?? null,
             'description' => $validated['description'] ?? null,
+            'icon'        => $validated['icon'] ?? null,
             'sort_order'  => $validated['sort_order'] ?? 0,
             'is_active'   => $request->has('is_active'),
         ]);
@@ -96,10 +99,12 @@ class CategoryController extends Controller
             ->where('id', '!=', $kategori->id)
             ->orderBy('name')
             ->get();
+        $availableIcons = Category::getAvailableIcons();
 
         return view('admin.kategori.edit', [
             'category'         => $kategori,
             'parentCategories' => $parentCategories,
+            'availableIcons'   => $availableIcons,
         ]);
     }
 
@@ -113,6 +118,7 @@ class CategoryController extends Controller
             'slug'        => ['nullable', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($kategori->id)],
             'parent_id'   => ['nullable', 'exists:categories,id', Rule::notIn([$kategori->id])],
             'description' => 'nullable|string',
+            'icon'        => 'nullable|string|max:50',
             'sort_order'  => 'nullable|integer|min:0',
             'is_active'   => 'nullable|boolean',
         ]);
@@ -124,6 +130,7 @@ class CategoryController extends Controller
             'slug'        => $slug,
             'parent_id'   => $validated['parent_id'] ?? null,
             'description' => $validated['description'] ?? null,
+            'icon'        => $validated['icon'] ?? null,
             'sort_order'  => $validated['sort_order'] ?? 0,
             'is_active'   => $request->has('is_active'),
         ]);

@@ -2,6 +2,89 @@
 
 @section('title', $product->name . ' — Spesifikasi & Garansi Resmi')
 @section('meta_description', $product->short_description ?? 'Beli ' . $product->name . ' dengan garansi resmi dan harga terbaik di LEOGATISTORE.')
+@section('og_type', 'product')
+@section('canonical', route('products.show', $product->slug))
+@if($product->primaryImage && !empty($product->primaryImage->image_path))
+    @section('og_image', asset($product->primaryImage->image_path))
+@endif
+
+@section('schema_json')
+@php
+    $defaultVariant = $product->variants->first();
+    $minPrice = $product->variants->min('price') ?? 0;
+    $maxPrice = $product->variants->max('price') ?? 0;
+    $inStock = $product->variants->sum('stock') > 0;
+    $avgRating = $product->reviews->avg('rating') ?: 5.0;
+    $reviewCount = $product->reviews->count();
+
+    $productSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => strip_tags($product->short_description ?: $product->description ?: $product->name),
+        'sku' => $defaultVariant?->sku ?? ('LEO-' . $product->id),
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => $product->brand?->name ?? 'LEOGATISTORE',
+        ],
+        'category' => $product->category?->name ?? 'Komputer',
+        'offers' => [
+            '@type' => 'AggregateOffer',
+            'priceCurrency' => 'IDR',
+            'lowPrice' => (float) $minPrice,
+            'highPrice' => (float) $maxPrice,
+            'offerCount' => $product->variants->count(),
+            'availability' => $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'url' => route('products.show', $product->slug),
+        ],
+    ];
+
+    if ($reviewCount > 0) {
+        $productSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => round((float) $avgRating, 1),
+            'reviewCount' => $reviewCount,
+        ];
+    }
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Beranda',
+                'item' => route('home'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Katalog',
+                'item' => route('products.index'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $product->category->name,
+                'item' => route('categories.show', $product->category->slug),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 4,
+                'name' => $product->name,
+                'item' => route('products.show', $product->slug),
+            ],
+        ],
+    ];
+@endphp
+<script type="application/ld+json">
+{!! json_encode($productSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10" 
@@ -28,17 +111,41 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- LEFT: IMAGES & BADGES -->
-        <div class="lg:col-span-5 space-y-4">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-center min-h-[340px] relative overflow-hidden">
-                <div class="w-32 h-32 rounded-3xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center font-black text-4xl shadow-inner">
-                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </div>
+        <div class="lg:col-span-5 space-y-4"
+            x-data="{
+                activeImage: '{{ ($product->primaryImage && !empty($product->primaryImage->image_path)) ? asset($product->primaryImage->image_path) : '' }}'
+            }">
+            
+            <!-- MAIN IMAGE DISPLAY -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-center min-h-[340px] max-h-[420px] relative overflow-hidden">
+                <template x-if="activeImage">
+                    <img :src="activeImage" alt="{{ $product->name }}" class="max-h-80 max-w-full object-contain transition-all duration-300">
+                </template>
+                <template x-if="!activeImage">
+                    <div class="w-28 h-28 rounded-3xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center font-black text-4xl shadow-inner">
+                        {!! $product->category ? $product->category->renderIcon('w-14 h-14') : '<svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>' !!}
+                    </div>
+                </template>
+
                 @if($product->is_featured)
                     <span class="absolute top-4 left-4 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black rounded-lg shadow-xs">
                         PRODUK UNGGULAN
                     </span>
                 @endif
             </div>
+
+            <!-- GALLERY THUMBNAILS (IF MULTIPLE IMAGES) -->
+            @if($product->images && $product->images->count() > 1)
+                <div class="flex items-center gap-3 overflow-x-auto pb-1">
+                    @foreach($product->images as $img)
+                        <button type="button" @click="activeImage = '{{ asset($img->image_path) }}'"
+                            class="w-16 h-16 rounded-xl border-2 p-1 bg-white shrink-0 transition overflow-hidden flex items-center justify-center"
+                            :class="activeImage === '{{ asset($img->image_path) }}' ? 'border-[#0B5CFF] ring-2 ring-blue-100 shadow-xs' : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'">
+                            <img src="{{ asset($img->image_path) }}" alt="Thumbnail" class="max-h-full max-w-full object-contain">
+                        </button>
+                    @endforeach
+                </div>
+            @endif
 
             <!-- OFFICIAL WARRANTY BANNER -->
             <div class="bg-gradient-to-r from-blue-900 to-[#071A3D] text-white p-4 rounded-2xl flex items-center space-x-3.5 shadow-xs">

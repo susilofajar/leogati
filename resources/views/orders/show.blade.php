@@ -99,18 +99,32 @@
 
         <div class="divide-y divide-slate-100 text-xs">
             @foreach($order->items as $item)
+                @php
+                    $product = $item->variant ? $item->variant->product : null;
+                @endphp
                 <div class="py-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div class="space-y-1">
-                        <h3 class="font-bold text-slate-900 text-xs sm:text-sm">{{ $item->product_name }}</h3>
-                        <p class="text-[11px] text-slate-500">
-                            Varian: <strong class="text-slate-800">{{ $item->variant_name }}</strong>
-                            <span class="text-slate-300 mx-1">•</span>
-                            SKU: <span class="font-mono text-slate-600">{{ $item->sku }}</span>
-                        </p>
-                        <p class="text-[11px] text-emerald-600 font-semibold flex items-center">
-                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            Garansi Resmi Terdaftar
-                        </p>
+                    <div class="flex items-center space-x-3.5">
+                        @if($product)
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1 overflow-hidden">
+                                {!! $product->renderThumbnail('max-h-full max-w-full object-contain', 'w-5 h-5') !!}
+                            </div>
+                        @else
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                        @endif
+                        <div class="space-y-1">
+                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm">{{ $item->product_name }}</h3>
+                            <p class="text-[11px] text-slate-500">
+                                Varian: <strong class="text-slate-800">{{ $item->variant_name }}</strong>
+                                <span class="text-slate-300 mx-1">•</span>
+                                SKU: <span class="font-mono text-slate-600">{{ $item->sku }}</span>
+                            </p>
+                            <p class="text-[11px] text-emerald-600 font-semibold flex items-center">
+                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                Garansi Resmi Terdaftar
+                            </p>
+                        </div>
                     </div>
 
                     <div class="text-right sm:min-w-[140px]">

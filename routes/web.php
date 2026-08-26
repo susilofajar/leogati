@@ -33,8 +33,17 @@ use App\Http\Controllers\PcBuilderController;
 use App\Http\Controllers\ProductCatalogController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WarrantyController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Rute SEO & Mesin Pencari
+|--------------------------------------------------------------------------
+*/
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 /*
 |--------------------------------------------------------------------------

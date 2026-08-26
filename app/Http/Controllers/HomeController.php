@@ -4,32 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Product;
+use App\Services\CacheService;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        protected CacheService $cacheService
+    ) {}
+
     /**
      * Show the application landing storefront.
      */
     public function index(): View
     {
-        $categories = Category::where('is_active', true)
+        $categories = $this->cacheService->getCachedCategories()
             ->whereNull('parent_id')
-            ->orderBy('sort_order')
-            ->take(8)
-            ->get();
+            ->take(8);
 
-        $brands = Brand::where('is_active', true)
-            ->orderBy('name')
-            ->take(12)
-            ->get();
+        $brands = $this->cacheService->getCachedBrands()
+            ->take(12);
 
-        $featuredProducts = Product::active()
-            ->featured()
-            ->with(['brand', 'category', 'variants', 'primaryImage'])
-            ->take(8)
-            ->get();
+        $featuredProducts = $this->cacheService->getCachedFeaturedProducts(8);
 
         return view('home', compact('categories', 'brands', 'featuredProducts'));
     }

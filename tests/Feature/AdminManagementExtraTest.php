@@ -142,6 +142,37 @@ class AdminManagementExtraTest extends TestCase
         $this->assertDatabaseMissing('brands', ['id' => $brand->id]);
     }
 
+    public function test_super_admin_can_upload_and_update_brand_logo(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $logo = \Illuminate\Http\UploadedFile::fake()->image('razer-logo.png');
+
+        $response = $this->actingAs($this->superAdmin)->post(route('admin.merek.store'), [
+            'name' => 'Razer Gaming',
+            'slug' => 'razer-gaming',
+            'logo' => $logo,
+        ]);
+
+        $response->assertRedirect(route('admin.merek.index'));
+        $brand = Brand::where('slug', 'razer-gaming')->first();
+        $this->assertNotNull($brand);
+        $this->assertNotNull($brand->logo);
+    }
+
+    public function test_regular_admin_cannot_upload_brand_logo(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $logo = \Illuminate\Http\UploadedFile::fake()->image('fake-logo.png');
+
+        $response = $this->actingAs($this->admin)->post(route('admin.merek.store'), [
+            'name' => 'Fake Brand',
+            'slug' => 'fake-brand',
+            'logo' => $logo,
+        ]);
+
+        $response->assertSessionHasErrors('logo');
+    }
+
     // --- USER & RBAC MANAGEMENT TESTS ---
 
     public function test_admin_can_view_users_list(): void

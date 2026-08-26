@@ -52,6 +52,7 @@ class BrandController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'slug'        => 'nullable|string|max:255|unique:brands,slug',
+            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
             'description' => 'nullable|string',
             'is_active'   => 'nullable|boolean',
         ]);
@@ -63,9 +64,19 @@ class BrandController extends Controller
             $slug = $originalSlug . '-' . $counter++;
         }
 
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            if (!$request->user() || !$request->user()->isSuperAdmin()) {
+                return back()->withInput()->withErrors(['logo' => 'Hanya Super Admin yang berhak mengunggah logo resmi mitra.']);
+            }
+            $path = $request->file('logo')->store('brands', 'public');
+            $logoPath = 'storage/' . $path;
+        }
+
         $brand = Brand::create([
             'name'        => $validated['name'],
             'slug'        => $slug,
+            'logo'        => $logoPath,
             'description' => $validated['description'] ?? null,
             'is_active'   => $request->has('is_active'),
         ]);
@@ -97,15 +108,26 @@ class BrandController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'slug'        => ['nullable', 'string', 'max:255', Rule::unique('brands', 'slug')->ignore($merek->id)],
+            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
             'description' => 'nullable|string',
             'is_active'   => 'nullable|boolean',
         ]);
 
         $slug = $request->filled('slug') ? $request->slug : Str::slug($validated['name']);
 
+        $logoPath = $merek->logo;
+        if ($request->hasFile('logo')) {
+            if (!$request->user() || !$request->user()->isSuperAdmin()) {
+                return back()->withInput()->withErrors(['logo' => 'Hanya Super Admin yang berhak mengubah logo resmi mitra.']);
+            }
+            $path = $request->file('logo')->store('brands', 'public');
+            $logoPath = 'storage/' . $path;
+        }
+
         $merek->update([
             'name'        => $validated['name'],
             'slug'        => $slug,
+            'logo'        => $logoPath,
             'description' => $validated['description'] ?? null,
             'is_active'   => $request->has('is_active'),
         ]);

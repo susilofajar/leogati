@@ -59,9 +59,7 @@ class Product extends Model
      */
     public function defaultVariant(): HasOne
     {
-        return $this->hasOne(ProductVariant::class)->where('is_default', true)->withDefault(function ($variant, $product) {
-            return $product->variants()->first();
-        });
+        return $this->hasOne(ProductVariant::class)->where('is_default', true);
     }
 
     /**
@@ -77,9 +75,40 @@ class Product extends Model
      */
     public function primaryImage(): HasOne
     {
-        return $this->hasOne(ProductImage::class)->where('is_primary', true)->withDefault(function ($image, $product) {
-            return $product->images()->first();
-        });
+        return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * URL Foto Utama Produk atau gambar pertama yang valid.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->primaryImage && !empty($this->primaryImage->image_path)) {
+            return asset($this->primaryImage->image_path);
+        }
+
+        $firstImg = $this->relationLoaded('images') ? $this->images->first() : $this->images()->first();
+        if ($firstImg && !empty($firstImg->image_path)) {
+            return asset($firstImg->image_path);
+        }
+
+        return null;
+    }
+
+    /**
+     * Render thumbnail gambar produk yang seragam di seluruh storefront (Home, Katalog, Keranjang, Komparasi, Checkout, Wishlist).
+     */
+    public function renderThumbnail(string $class = 'max-h-full max-w-full object-contain', string $iconClass = 'w-7 h-7'): string
+    {
+        if (!empty($this->image_url)) {
+            return '<img src="' . e($this->image_url) . '" alt="' . e($this->name) . '" class="' . $class . '">';
+        }
+
+        if ($this->category) {
+            return $this->category->renderIcon($iconClass);
+        }
+
+        return '<svg class="' . $iconClass . '" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>';
     }
 
     /**

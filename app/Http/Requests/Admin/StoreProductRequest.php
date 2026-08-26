@@ -37,6 +37,11 @@ class StoreProductRequest extends FormRequest
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'weight_grams' => ['required', 'integer', 'min:1'],
+
+            // Product Images
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
+            'primary_image_index' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -60,6 +65,9 @@ class StoreProductRequest extends FormRequest
             'cost_price' => 'harga modal',
             'stock' => 'stok barang',
             'weight_grams' => 'berat produk',
+            'images' => 'foto produk',
+            'images.*' => 'berkas foto produk',
+            'primary_image_index' => 'foto utama produk',
         ];
     }
 }

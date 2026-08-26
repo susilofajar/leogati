@@ -55,6 +55,38 @@
                 </div>
             </div>
 
+            <!-- PILIHAN IKON KATEGORI -->
+            <div x-data="{ selectedIcon: '{{ old('icon', 'laptop') }}' }" class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="block font-bold text-slate-700">
+                        Ikon Visual Kategori <span class="text-slate-400 font-normal">(Pilih ikon representatif untuk tampilan storefront)</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[11px] text-slate-500 font-medium">Ikon Terpilih:</span>
+                        <span class="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-[#0B5CFF] font-mono font-bold text-[11px]" x-text="selectedIcon || 'default'"></span>
+                    </div>
+                </div>
+
+                <input type="hidden" name="icon" :value="selectedIcon">
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 p-3 bg-slate-50 border border-slate-200 rounded-2xl max-h-56 overflow-y-auto">
+                    @foreach($availableIcons as $iconKey => $meta)
+                        <button type="button" @click="selectedIcon = '{{ $iconKey }}'"
+                            :class="selectedIcon === '{{ $iconKey }}' ? 'bg-[#0B5CFF] text-white border-[#0B5CFF] shadow-xs ring-2 ring-blue-200' : 'bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'"
+                            class="flex items-center space-x-2.5 p-2 rounded-xl border text-left transition group">
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                :class="selectedIcon === '{{ $iconKey }}' ? 'bg-white/20 text-white' : 'bg-blue-50 text-[#0B5CFF] group-hover:bg-blue-100'">
+                                {!! (new \App\Models\Category(['icon' => $iconKey]))->renderIcon('w-4 h-4') !!}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="font-bold text-[11px] truncate leading-tight">{{ $meta['label'] }}</p>
+                                <span class="text-[9px] opacity-75 truncate block leading-tight">{{ $iconKey }}</span>
+                            </div>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+
             <div>
                 <label for="description" class="block font-bold text-slate-700 mb-1.5">Deskripsi Singkat</label>
                 <textarea name="description" id="description" rows="3" placeholder="Penjelasan singkat mengenai kategori produk..."

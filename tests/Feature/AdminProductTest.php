@@ -117,6 +117,84 @@ class AdminProductTest extends TestCase
     }
 
     /**
+     * Test admin can create product with uploaded images.
+     */
+    public function test_admin_can_create_product_with_images(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $admin = User::where('email', 'admin@leogati.store')->first();
+        $category = Category::first();
+        $brand = Brand::first();
+
+        $file1 = \Illuminate\Http\UploadedFile::fake()->image('pc-1.jpg');
+        $file2 = \Illuminate\Http\UploadedFile::fake()->image('pc-2.jpg');
+
+        $response = $this->actingAs($admin)->post('/admin/produk', [
+            'name' => 'Custom Gaming PC RTX 4090',
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
+            'short_description' => 'PC Gaming Monster',
+            'description' => 'Spesifikasi dewa',
+            'warranty_period_months' => 36,
+            'status' => 'active',
+            'sku' => 'PC-RTX4090-ULTRA',
+            'price' => 65000000,
+            'cost_price' => 55000000,
+            'stock' => 3,
+            'weight_grams' => 15000,
+            'images' => [$file1, $file2],
+            'primary_image_index' => 0,
+        ]);
+
+        $response->assertRedirect(route('admin.produk.index'));
+        
+        $product = Product::where('slug', 'custom-gaming-pc-rtx-4090')->first();
+        $this->assertNotNull($product);
+        $this->assertCount(2, $product->images);
+        $this->assertTrue($product->primaryImage->is_primary);
+    }
+
+    /**
+     * Test admin can create category with custom icon.
+     */
+    public function test_admin_can_create_and_update_category_with_icon(): void
+    {
+        $admin = User::where('email', 'admin@leogati.store')->first();
+
+        // 1. Create Category with icon
+        $response = $this->actingAs($admin)->post('/admin/kategori', [
+            'name' => 'Perangkat Gaming Sultan',
+            'description' => 'Kategori peripheral gaming level turnamen',
+            'icon' => 'gamepad',
+            'sort_order' => 1,
+            'is_active' => 1,
+        ]);
+
+        $response->assertRedirect(route('admin.kategori.index'));
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Perangkat Gaming Sultan',
+            'icon' => 'gamepad',
+        ]);
+
+        $category = Category::where('name', 'Perangkat Gaming Sultan')->first();
+        $this->assertStringContainsString('<svg', $category->icon_svg);
+
+        // 2. Update Category with another icon
+        $updateResponse = $this->actingAs($admin)->put('/admin/kategori/' . $category->id, [
+            'name' => 'Perangkat Gaming Sultan (Pro)',
+            'icon' => 'headphones',
+            'sort_order' => 2,
+            'is_active' => 1,
+        ]);
+
+        $updateResponse->assertRedirect(route('admin.kategori.index'));
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'icon' => 'headphones',
+        ]);
+    }
+
+    /**
      * Test admin can delete product.
      */
     public function test_admin_can_delete_product(): void

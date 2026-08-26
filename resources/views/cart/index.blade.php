@@ -45,9 +45,9 @@
                                 <div class="p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition">
                                     
                                     <div class="flex items-center space-x-4">
-                                        <div class="w-16 h-16 rounded-2xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center shrink-0">
-                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        </div>
+                                        <a href="{{ route('products.show', $product->slug) }}" class="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200/80 text-[#0B5CFF] flex items-center justify-center shrink-0 p-1.5 overflow-hidden hover:border-[#0B5CFF] transition">
+                                            {!! $product->renderThumbnail('max-h-full max-w-full object-contain', 'w-7 h-7') !!}
+                                        </a>
 
                                         <div class="space-y-1">
                                             <span class="text-[10px] font-bold uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">

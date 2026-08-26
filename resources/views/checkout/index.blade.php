@@ -256,12 +256,17 @@
                             $product = $variant ? $variant->product : null;
                         @endphp
                         @if($product)
-                            <div class="flex items-center justify-between text-xs py-1 border-b border-slate-50">
-                                <div class="max-w-[190px]">
-                                    <p class="font-bold text-slate-900 truncate">{{ $product->name }}</p>
-                                    <p class="text-[11px] text-slate-500">{{ $item->quantity }}x @ {{ rupiah($variant->price) }}</p>
+                            <div class="flex items-center justify-between text-xs py-2 border-b border-slate-50 gap-3">
+                                <div class="flex items-center space-x-2.5 max-w-[210px] min-w-0">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 p-1 overflow-hidden">
+                                        {!! $product->renderThumbnail('max-h-full max-w-full object-contain', 'w-4 h-4') !!}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-slate-900 truncate">{{ $product->name }}</p>
+                                        <p class="text-[11px] text-slate-500">{{ $item->quantity }}x @ {{ rupiah($variant->price) }}</p>
+                                    </div>
                                 </div>
-                                <span class="font-extrabold text-slate-900">{{ rupiah($item->subtotal) }}</span>
+                                <span class="font-extrabold text-slate-900 shrink-0">{{ rupiah($item->subtotal) }}</span>
                             </div>
                         @endif
                     @endforeach

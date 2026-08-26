@@ -142,9 +142,7 @@
             @foreach($categories as $category)
                 <a href="{{ route('categories.show', $category->slug) }}" class="bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-[#0B5CFF] hover:shadow-md transition group text-left">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 group-hover:bg-[#0B5CFF] text-[#0B5CFF] group-hover:text-white flex items-center justify-center transition mb-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
+                        {!! $category->renderIcon('w-5 h-5') !!}
                     </div>
                     <h3 class="text-sm font-bold text-slate-900 group-hover:text-[#0B5CFF] transition truncate">{{ $category->name }}</h3>
                     <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">{{ $category->description }}</p>
@@ -185,9 +183,7 @@
                             </div>
 
                             <a href="{{ route('products.show', $product->slug) }}" class="block w-full h-36 bg-slate-50 rounded-xl overflow-hidden flex items-center justify-center p-3">
-                                <div class="w-14 h-14 rounded-2xl bg-blue-100/70 text-[#0B5CFF] flex items-center justify-center font-black group-hover:scale-105 transition">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                </div>
+                                {!! $product->renderThumbnail('max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300', 'w-7 h-7') !!}
                             </a>
 
                             <div>
@@ -219,18 +215,36 @@
 
     <!-- PC BUILDER BANNER -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-r from-[#071A3D] to-[#063B9E] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-xl">
-            <div class="relative z-10 max-w-xl space-y-4">
-                <span class="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-lg tracking-wider">Fitur Unggulan</span>
-                <h2 class="text-2xl sm:text-3xl font-black">Rakit Komputer Impian dengan Cek Kompatibilitas Cerdas</h2>
-                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                    Sistem LEOGATISTORE memeriksa kecocokan soket prosesor, motherboard, konsumsi daya power supply (PSU), hingga dimensi casing secara otomatis.
-                </p>
-                <div class="pt-2">
-                    <a href="{{ route('pc_builder.index') }}" class="inline-flex items-center px-6 py-3 bg-[#0B5CFF] hover:bg-blue-600 text-white font-bold text-xs rounded-xl shadow-lg transition">
-                        Buka Simulator PC Builder
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </a>
+        <div class="bg-linear-to-r from-[#071A3D] via-[#0B2559] to-[#0B5CFF] rounded-3xl p-6 sm:p-10 lg:p-12 text-white relative overflow-hidden shadow-xl border border-blue-900/30">
+            <!-- Background Glow Decor -->
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-400/15 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center relative z-10">
+                <div class="md:col-span-7 lg:col-span-8 space-y-4 text-center md:text-left">
+                    <span class="inline-block px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-lg tracking-wider shadow-xs">
+                        Fitur Unggulan
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+                        Rakit Komputer Impian dengan Cek Kompatibilitas Cerdas
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-2xl">
+                        Sistem LEOGATISTORE memeriksa kecocokan soket prosesor, motherboard, konsumsi daya power supply (PSU), hingga dimensi casing secara otomatis.
+                    </p>
+                    <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                        <a href="{{ route('pc_builder.index') }}" class="inline-flex items-center px-6 py-3.5 bg-[#0B5CFF] hover:bg-blue-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-blue-500/25 transition transform hover:-translate-y-0.5">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                            Buka Simulator PC Builder
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mascot Illustration -->
+                <div class="md:col-span-5 lg:col-span-4 flex justify-center md:justify-end">
+                    <div class="relative w-44 sm:w-56 md:w-64 lg:w-72 max-w-full">
+                        <img src="{{ asset('images/logo/tembak ungu rambut grey.png') }}" 
+                             alt="LEOGATISTORE Gaming Mascot" 
+                             class="w-full h-auto object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.45)] transition-transform duration-300 hover:scale-105">
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,13 +254,15 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-xl mx-auto mb-8">
             <h2 class="text-xl font-extrabold text-slate-900">Merek Resmi Mitra Terpercaya</h2>
-            <p class="text-xs text-slate-500 mt-1">Kami bermitra langsung dengan produsen teknologi terkemuka dunia</p>
+            <p class="text-xs text-slate-500 mt-1">Kami bermitra langsung dengan produsen hardware dan teknologi terkemuka dunia</p>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3.5">
             @foreach($brands as $brand)
-                <a href="{{ route('brands.show', $brand->slug) }}" class="bg-white p-4 rounded-xl border border-slate-200/80 flex items-center justify-center text-center hover:border-[#0B5CFF] hover:shadow-xs transition group">
-                    <span class="text-xs font-bold text-slate-700 group-hover:text-[#0B5CFF] tracking-wider uppercase transition">{{ $brand->name }}</span>
+                <a href="{{ route('brands.show', $brand->slug) }}" class="bg-white px-3 py-3.5 rounded-2xl border border-slate-200/80 flex items-center justify-center text-center hover:border-[#0B5CFF] hover:shadow-md transition group h-20">
+                    <div class="h-7 w-full flex items-center justify-center transition group-hover:scale-105">
+                        {!! $brand->renderLogo('h-6 w-auto max-h-7 max-w-[100px] object-contain') !!}
+                    </div>
                 </a>
             @endforeach
         </div>

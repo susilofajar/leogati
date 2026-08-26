@@ -146,11 +146,9 @@
                                 </div>
 
                                 <!-- IMAGE PLACEHOLDER OR THUMBNAIL -->
-                                <div class="relative w-full h-40 bg-slate-50 rounded-xl overflow-hidden flex items-center justify-center p-4">
+                                <div class="relative w-full h-40 bg-slate-50 rounded-xl overflow-hidden flex items-center justify-center p-3">
                                     <a href="{{ route('products.show', $product->slug) }}" class="w-full h-full flex items-center justify-center">
-                                        <div class="w-16 h-16 rounded-2xl bg-blue-100/70 text-[#0B5CFF] flex items-center justify-center font-black text-xl group-hover:scale-105 transition">
-                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                        </div>
+                                        {!! $product->renderThumbnail('max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300', 'w-8 h-8') !!}
                                     </a>
 
                                     @if($product->is_featured)

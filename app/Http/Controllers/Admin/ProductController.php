@@ -8,22 +8,28 @@ use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\SpecificationGroup;
+use App\Services\CacheService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        protected CacheService $cacheService
+    ) {}
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): View
     {
-        $query = Product::with(['category', 'brand', 'variants']);
+        $query = Product::with(['category', 'brand', 'variants', 'primaryImage']);
 
         if ($search = $request->input('q')) {
             $query->where(function ($q) use ($search) {
@@ -100,7 +106,23 @@ class ProductController extends Controller
                 'is_default' => true,
                 'is_active' => true,
             ]);
+
+            // Handle Uploaded Images
+            if ($request->hasFile('images')) {
+                $primaryIndex = (int) $request->input('primary_image_index', 0);
+                foreach ($request->file('images') as $index => $file) {
+                    $path = $file->store('products', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => 'storage/' . $path,
+                        'is_primary' => ($index === $primaryIndex),
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
         });
+
+        $this->cacheService->flushCatalogCache();
 
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk baru berhasil ditambahkan ke katalog!');
@@ -111,7 +133,7 @@ class ProductController extends Controller
      */
     public function edit(Product $produk): View
     {
-        $product = $produk->load(['category', 'brand', 'variants', 'specifications']);
+        $product = $produk->load(['category', 'brand', 'variants', 'specifications', 'images']);
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
         $defaultVariant = $product->variants()->where('is_default', true)->first();
@@ -146,7 +168,58 @@ class ProductController extends Controller
                     'weight_grams' => $request->weight_grams,
                 ]);
             }
+
+            // 1. Handle Deleted Images
+            if ($request->filled('delete_images')) {
+                $imagesToDelete = ProductImage::where('product_id', $produk->id)
+                    ->whereIn('id', $request->delete_images)
+                    ->get();
+
+                foreach ($imagesToDelete as $img) {
+                    $relative = str_replace('storage/', '', $img->image_path);
+                    if (Storage::disk('public')->exists($relative)) {
+                        Storage::disk('public')->delete($relative);
+                    }
+                    $img->delete();
+                }
+            }
+
+            // 2. Handle Primary Image Selection among existing
+            if ($request->filled('primary_image_id')) {
+                ProductImage::where('product_id', $produk->id)->update(['is_primary' => false]);
+                ProductImage::where('product_id', $produk->id)
+                    ->where('id', $request->primary_image_id)
+                    ->update(['is_primary' => true]);
+            }
+
+            // 3. Handle Newly Uploaded Images
+            if ($request->hasFile('images')) {
+                $currentCount = $produk->images()->count();
+                $hasExistingPrimary = $produk->images()->where('is_primary', true)->exists();
+
+                foreach ($request->file('images') as $index => $file) {
+                    $path = $file->store('products', 'public');
+                    $isPrimary = (!$hasExistingPrimary && $index === 0);
+
+                    ProductImage::create([
+                        'product_id' => $produk->id,
+                        'image_path' => 'storage/' . $path,
+                        'is_primary' => $isPrimary,
+                        'sort_order' => $currentCount + $index,
+                    ]);
+                }
+            }
+
+            // Ensure at least one primary image exists if images are present
+            if ($produk->images()->exists() && !$produk->images()->where('is_primary', true)->exists()) {
+                $first = $produk->images()->first();
+                if ($first) {
+                    $first->update(['is_primary' => true]);
+                }
+            }
         });
+
+        $this->cacheService->flushCatalogCache();
 
         return redirect()->route('admin.produk.index')
             ->with('success', 'Data produk ' . $produk->name . ' berhasil diperbarui!');
@@ -159,6 +232,8 @@ class ProductController extends Controller
     {
         $name = $produk->name;
         $produk->delete();
+
+        $this->cacheService->flushCatalogCache();
 
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk ' . $name . ' berhasil dihapus dari katalog.');

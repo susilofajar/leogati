@@ -92,14 +92,15 @@ class ProductCatalogController extends Controller
 
         $products = $query->paginate(12)->withQueryString();
 
-        $categories = Category::where('is_active', true)->whereNull('parent_id')->orderBy('sort_order')->get();
-        $brands = Brand::where('is_active', true)->orderBy('name')->get();
+        $categories = $this->cacheService->getCachedCategories()->whereNull('parent_id');
+        $brands = $this->cacheService->getCachedBrands();
 
         return view('products.index', compact('products', 'categories', 'brands'));
     }
 
     public function __construct(
-        protected \App\Services\ReviewService $reviewService
+        protected \App\Services\ReviewService $reviewService,
+        protected \App\Services\CacheService $cacheService
     ) {}
 
     /**

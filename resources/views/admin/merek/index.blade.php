@@ -66,10 +66,10 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($brands as $brand)
                         <tr class="hover:bg-slate-50/80 transition">
-                            <td class="px-5 py-4 font-bold text-slate-900">
-                                <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-[#0B5CFF] font-black text-xs flex items-center justify-center border border-blue-100 uppercase">
-                                        {{ substr($brand->name, 0, 2) }}
+                            <td class="px-5 py-3.5 font-bold text-slate-900">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-9 px-2.5 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200 shrink-0 min-w-[60px]">
+                                        {!! $brand->renderLogo('h-5 w-auto max-w-[80px] object-contain') !!}
                                     </div>
                                     <span>{{ $brand->name }}</span>
                                 </div>

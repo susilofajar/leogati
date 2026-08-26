@@ -7,6 +7,9 @@
 
     <title>{{ config('app.name', 'LEOGATISTORE') }} — @yield('title', 'Autentikasi Pengguna')</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/tembak ungu rambut grey.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,16 +21,8 @@
 <body class="min-h-full bg-[#F7F9FC] flex flex-col justify-center py-12 sm:px-6 lg:px-8 antialiased text-slate-800 selection:bg-[#0B5CFF] selection:text-white">
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <a href="{{ route('home') }}" class="inline-flex items-center space-x-2.5 mb-4">
-            <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-[#0B5CFF] to-[#071A3D] flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-            </div>
-            <div class="text-left">
-                <span class="text-2xl font-black tracking-tight text-[#071A3D]">LEOGATI<span class="text-[#0B5CFF]">STORE</span></span>
-                <p class="text-[11px] tracking-wider font-bold text-slate-500 uppercase -mt-1">Technology Commerce</p>
-            </div>
+        <a href="{{ route('home') }}" class="inline-flex items-center justify-center mb-6 group">
+            <img src="{{ asset('images/logo/logo.png') }}" alt="{{ config('app.name', 'LEOGATISTORE') }}" class="h-12 sm:h-14 w-auto object-contain transition-transform group-hover:scale-102">
         </a>
         <h2 class="text-xl font-extrabold text-slate-900">
             @yield('heading', 'Selamat Datang di LEOGATISTORE')
