@@ -367,10 +367,86 @@
             </div>
         </div>
 
-        <!-- SECTION 4: DESKRIPSI -->
+        <!-- SECTION 4: VIDEO PRODUK (OPSIONAL) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4"
+            x-data="{
+                hasExistingVideo: {{ $product->hasVideo() ? 'true' : 'false' }},
+                deleteVideo: false,
+                videoName: '',
+                videoSize: '',
+                handleVideo(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.videoName = file.name;
+                        this.videoSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                        this.deleteVideo = false;
+                    } else {
+                        this.videoName = '';
+                        this.videoSize = '';
+                    }
+                }
+            }">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B5CFF]">
+                    4. Video Produk (Opsional)
+                </h3>
+                <span class="text-[11px] text-slate-400">Maks. 50MB • Format: MP4, WEBM, MOV, OGG</span>
+            </div>
+
+            <!-- VIDEO SAAT INI -->
+            @if($product->hasVideo())
+                <div x-show="hasExistingVideo" class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-800">Video Produk Saat Ini</span>
+                        <label class="inline-flex items-center space-x-2 text-xs font-bold text-rose-600 cursor-pointer">
+                            <input type="checkbox" name="delete_video" value="1" x-model="deleteVideo"
+                                class="w-4 h-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                            <span>Hapus Video Ini</span>
+                        </label>
+                    </div>
+
+                    <div class="max-w-md rounded-xl overflow-hidden bg-slate-900 border border-slate-300" :class="deleteVideo ? 'opacity-30 pointer-events-none' : ''">
+                        <video controls class="w-full max-h-48 object-contain">
+                            <source src="{{ $product->video_url }}" type="video/mp4">
+                            Browser Anda tidak mendukung tag video HTML5.
+                        </video>
+                    </div>
+
+                    <p x-show="deleteVideo" class="text-xs font-bold text-rose-600">
+                        ⚠ Video akan dihapus permanen saat Anda menekan tombol Simpan Perubahan.
+                    </p>
+                </div>
+            @endif
+
+            <!-- UPLOAD / GANTI VIDEO -->
+            <div>
+                <label for="video" class="block text-xs font-bold text-slate-700 mb-1">
+                    {{ $product->hasVideo() ? 'Ganti dengan Berkas Video Baru' : 'Unggah Berkas Video Demo / Unboxing Produk' }}
+                </label>
+                <input type="file" name="video" id="video" accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                    @change="handleVideo($event)"
+                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#0B5CFF] hover:file:bg-blue-100 border border-slate-300 rounded-xl p-1 bg-slate-50 focus:outline-hidden">
+                <p class="text-[11px] text-slate-500 mt-1">Biarkan kosong jika tidak ingin mengubah video saat ini.</p>
+                @error('video')
+                    <p class="mt-1 text-xs text-rose-600 font-bold">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <template x-if="videoName">
+                <div class="p-3 bg-blue-50/60 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2 text-blue-900 font-semibold">
+                        <svg class="w-4 h-4 text-[#0B5CFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span x-text="videoName" class="truncate max-w-xs"></span>
+                    </div>
+                    <span class="text-blue-600 font-bold" x-text="videoSize"></span>
+                </div>
+            </template>
+        </div>
+
+        <!-- SECTION 5: DESKRIPSI -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
             <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B5CFF] border-b border-slate-100 pb-2">
-                4. Deskripsi & Rincian Produk
+                5. Deskripsi & Rincian Produk
             </h3>
 
             <div>

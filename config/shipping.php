@@ -11,9 +11,9 @@ return [
     |
     */
 
-    'origin_city' => env('SHIPPING_ORIGIN_CITY', 'Jakarta Pusat'),
-    'origin_district' => env('SHIPPING_ORIGIN_DISTRICT', 'Gambir'),
-    'origin_postal_code' => env('SHIPPING_ORIGIN_POSTAL_CODE', '10110'),
+    'origin_city' => env('SHIPPING_ORIGIN_CITY', 'Kendal'),
+    'origin_district' => env('SHIPPING_ORIGIN_DISTRICT', 'Kendal'),
+    'origin_postal_code' => env('SHIPPING_ORIGIN_POSTAL_CODE', '51311'),
 
     /*
     |--------------------------------------------------------------------------

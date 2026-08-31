@@ -18,6 +18,8 @@ class HomeController extends Controller
      */
     public function index(): View
     {
+        $heroBanners = $this->cacheService->getCachedHeroBanners();
+
         $categories = $this->cacheService->getCachedCategories()
             ->whereNull('parent_id')
             ->take(8);
@@ -27,6 +29,6 @@ class HomeController extends Controller
 
         $featuredProducts = $this->cacheService->getCachedFeaturedProducts(8);
 
-        return view('home', compact('categories', 'brands', 'featuredProducts'));
+        return view('home', compact('heroBanners', 'categories', 'brands', 'featuredProducts'));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\HeroBanner;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -18,6 +19,7 @@ class CacheService
     public const KEY_ACTIVE_BRANDS = 'leogati:brands:active_list';
     public const KEY_FEATURED_PRODUCTS = 'leogati:products:featured_list';
     public const KEY_PC_BUILDER_COMPONENTS = 'leogati:pc_builder:components';
+    public const KEY_HERO_BANNERS = 'leogati:hero_banners:active_list';
 
     /**
      * Ambil daftar kategori aktif dengan cache yang aman.
@@ -88,6 +90,33 @@ class CacheService
     }
 
     /**
+     * Ambil daftar banner hero aktif dengan cache yang aman.
+     */
+    public function getCachedHeroBanners(): Collection
+    {
+        $cached = Cache::get(self::KEY_HERO_BANNERS);
+        if ($cached instanceof Collection) {
+            return $cached;
+        }
+
+        $banners = HeroBanner::active()
+            ->ordered()
+            ->get();
+
+        Cache::put(self::KEY_HERO_BANNERS, $banners, self::TTL_MEDIUM);
+
+        return $banners;
+    }
+
+    /**
+     * Hapus cache banner hero.
+     */
+    public function flushHeroBannerCache(): void
+    {
+        Cache::forget(self::KEY_HERO_BANNERS);
+    }
+
+    /**
      * Hapus cache katalog saat ada modifikasi data oleh Admin/Sistem.
      */
     public function flushCatalogCache(): void
@@ -95,6 +124,7 @@ class CacheService
         Cache::forget(self::KEY_ACTIVE_CATEGORIES);
         Cache::forget(self::KEY_ACTIVE_BRANDS);
         Cache::forget(self::KEY_PC_BUILDER_COMPONENTS);
+        Cache::forget(self::KEY_HERO_BANNERS);
         Cache::forget(self::KEY_FEATURED_PRODUCTS . ':limit_8');
         Cache::forget(self::KEY_FEATURED_PRODUCTS . ':limit_10');
         Cache::forget(self::KEY_FEATURED_PRODUCTS . ':limit_12');

@@ -16,12 +16,12 @@ class WarehouseSeeder extends Seeder
             ['code' => 'GUD-PUSAT'],
             [
                 'name'        => 'Gudang Pusat LEOGATISTORE',
-                'address'     => 'Jl. Teknologi Raya No. 1',
-                'city'        => 'Jakarta Selatan',
-                'province'    => 'DKI Jakarta',
-                'postal_code' => '12560',
-                'phone'       => '021-55500001',
-                'pic_name'    => 'Kepala Gudang',
+                'address'     => 'Jl. Soekarno-Hatta No. 88, Kendal',
+                'city'        => 'Kendal',
+                'province'    => 'Jawa Tengah',
+                'postal_code' => '51311',
+                'phone'       => '0813-2589-2020',
+                'pic_name'    => 'Kepala Gudang Kendal',
                 'is_active'   => true,
                 'is_default'  => true,
             ]

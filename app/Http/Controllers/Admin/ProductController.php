@@ -88,6 +88,12 @@ class ProductController extends Controller
                 $count++;
             }
 
+            $videoPath = null;
+            if ($request->hasFile('video')) {
+                $vPath = $request->file('video')->store('products/videos', 'public');
+                $videoPath = 'storage/' . $vPath;
+            }
+
             $product = Product::create([
                 'category_id' => $request->category_id,
                 'brand_id' => $request->brand_id,
@@ -95,6 +101,7 @@ class ProductController extends Controller
                 'slug' => $slug,
                 'short_description' => $request->short_description,
                 'description' => $request->description,
+                'video_path' => $videoPath,
                 'warranty_period_months' => $request->warranty_period_months,
                 'status' => $request->status,
                 'is_featured' => $request->boolean('is_featured'),
@@ -157,12 +164,33 @@ class ProductController extends Controller
         $this->authorize('update', $produk);
 
         DB::transaction(function () use ($request, $produk) {
+            $videoPath = $produk->video_path;
+            if ($request->boolean('delete_video')) {
+                if ($videoPath && str_contains($videoPath, 'storage/products/videos/')) {
+                    $rel = str_replace('storage/', '', $videoPath);
+                    if (Storage::disk('public')->exists($rel)) {
+                        Storage::disk('public')->delete($rel);
+                    }
+                }
+                $videoPath = null;
+            } elseif ($request->hasFile('video')) {
+                if ($videoPath && str_contains($videoPath, 'storage/products/videos/')) {
+                    $rel = str_replace('storage/', '', $videoPath);
+                    if (Storage::disk('public')->exists($rel)) {
+                        Storage::disk('public')->delete($rel);
+                    }
+                }
+                $vPath = $request->file('video')->store('products/videos', 'public');
+                $videoPath = 'storage/' . $vPath;
+            }
+
             $produk->update([
                 'category_id' => $request->category_id,
                 'brand_id' => $request->brand_id,
                 'name' => $request->name,
                 'short_description' => $request->short_description,
                 'description' => $request->description,
+                'video_path' => $videoPath,
                 'warranty_period_months' => $request->warranty_period_months,
                 'status' => $request->status,
                 'is_featured' => $request->boolean('is_featured'),
@@ -243,6 +271,23 @@ class ProductController extends Controller
         $this->authorize('delete', $produk);
 
         $name = $produk->name;
+
+        // Clean up video file if exists
+        if ($produk->video_path && str_contains($produk->video_path, 'storage/products/videos/')) {
+            $rel = str_replace('storage/', '', $produk->video_path);
+            if (Storage::disk('public')->exists($rel)) {
+                Storage::disk('public')->delete($rel);
+            }
+        }
+
+        // Clean up image files
+        foreach ($produk->images as $img) {
+            $rel = str_replace('storage/', '', $img->image_path);
+            if (Storage::disk('public')->exists($rel)) {
+                Storage::disk('public')->delete($rel);
+            }
+        }
+
         $produk->delete();
 
         $this->cacheService->flushCatalogCache();

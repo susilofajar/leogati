@@ -314,10 +314,57 @@
             </div>
         </div>
 
-        <!-- SECTION 4: DESKRIPSI -->
+        <!-- SECTION 4: VIDEO PRODUK (OPSIONAL) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4"
+            x-data="{
+                videoName: '',
+                videoSize: '',
+                handleVideo(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.videoName = file.name;
+                        this.videoSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                    } else {
+                        this.videoName = '';
+                        this.videoSize = '';
+                    }
+                }
+            }">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B5CFF]">
+                    4. Video Produk (Opsional)
+                </h3>
+                <span class="text-[11px] text-slate-400">Maks. 50MB • Format: MP4, WEBM, MOV, OGG</span>
+            </div>
+
+            <div>
+                <label for="video" class="block text-xs font-bold text-slate-700 mb-1">
+                    Unggah Berkas Video Demo / Unboxing Produk
+                </label>
+                <input type="file" name="video" id="video" accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                    @change="handleVideo($event)"
+                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#0B5CFF] hover:file:bg-blue-100 border border-slate-300 rounded-xl p-1 bg-slate-50 focus:outline-hidden">
+                <p class="text-[11px] text-slate-500 mt-1">Video akan muncul di galeri storefront produk dan dapat diputar langsung oleh calon pembeli.</p>
+                @error('video')
+                    <p class="mt-1 text-xs text-rose-600 font-bold">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <template x-if="videoName">
+                <div class="p-3 bg-blue-50/60 border border-blue-200 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2 text-blue-900 font-semibold">
+                        <svg class="w-4 h-4 text-[#0B5CFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span x-text="videoName" class="truncate max-w-xs"></span>
+                    </div>
+                    <span class="text-blue-600 font-bold" x-text="videoSize"></span>
+                </div>
+            </template>
+        </div>
+
+        <!-- SECTION 5: DESKRIPSI -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
             <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B5CFF] border-b border-slate-100 pb-2">
-                4. Deskripsi & Rincian Produk
+                5. Deskripsi & Rincian Produk
             </h3>
 
             <div>

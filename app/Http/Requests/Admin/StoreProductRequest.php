@@ -38,10 +38,11 @@ class StoreProductRequest extends FormRequest
             'stock' => ['required', 'integer', 'min:0'],
             'weight_grams' => ['required', 'integer', 'min:1'],
 
-            // Product Images
+            // Product Images & Video
             'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'mimes:jpeg,png,jpg,webp,gif', 'max:5120'],
             'primary_image_index' => ['nullable', 'integer', 'min:0'],
+            'video' => ['nullable', 'file', 'mimes:mp4,webm,ogg,mov', 'max:51200'],
         ];
     }
 
@@ -68,6 +69,7 @@ class StoreProductRequest extends FormRequest
             'images' => 'foto produk',
             'images.*' => 'berkas foto produk',
             'primary_image_index' => 'foto utama produk',
+            'video' => 'video produk',
         ];
     }
 }

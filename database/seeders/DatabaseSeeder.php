@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RoleAndPermissionSeeder::class,
             CatalogBaseSeeder::class,
             ProductCatalogSeeder::class,
+            HeroBannerSeeder::class,
             WarehouseSeeder::class,
             OperationalDemoSeeder::class,
         ]);

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\HeroBannerController as AdminHeroBannerController;
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -237,6 +238,17 @@ Route::middleware(['auth', 'role:super_admin,admin,warehouse_staff,sales_staff,f
             'update'  => 'kupon.update',
             'destroy' => 'kupon.destroy',
         ]);
+
+        // Banner Hero Background
+        Route::resource('banner-hero', AdminHeroBannerController::class)->except(['show'])->names([
+            'index'   => 'banner-hero.index',
+            'create'  => 'banner-hero.create',
+            'store'   => 'banner-hero.store',
+            'edit'    => 'banner-hero.edit',
+            'update'  => 'banner-hero.update',
+            'destroy' => 'banner-hero.destroy',
+        ]);
+        Route::post('/banner-hero/{banner_hero}/toggle', [AdminHeroBannerController::class, 'toggle'])->name('banner-hero.toggle');
 
         // Moderasi Ulasan Produk
         Route::get('/ulasan', [AdminReviewModerationController::class, 'index'])->name('ulasan.index');

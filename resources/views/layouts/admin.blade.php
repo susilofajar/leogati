@@ -139,6 +139,14 @@
             </a>
             @endcan
 
+            @can('viewAny', App\Models\HeroBanner::class)
+            <a href="{{ route('admin.banner-hero.index') }}" 
+                class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.banner-hero.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">
+                <svg class="w-4 h-4 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Banner Hero Background
+            </a>
+            @endcan
+
             @can('viewAny', App\Models\Review::class)
             <a href="{{ route('admin.ulasan.index') }}" 
                 class="flex items-center px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.ulasan.*') ? 'bg-[#0B5CFF] text-white shadow-xs' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}">

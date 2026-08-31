@@ -20,6 +20,7 @@ class Product extends Model
         'slug',
         'short_description',
         'description',
+        'video_path',
         'warranty_period_months',
         'status',
         'is_featured',
@@ -93,6 +94,30 @@ class Product extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Dapatkan URL penuh video produk (jika ada).
+     */
+    public function getVideoUrlAttribute(): ?string
+    {
+        if (empty($this->video_path)) {
+            return null;
+        }
+
+        if (str_starts_with($this->video_path, 'http://') || str_starts_with($this->video_path, 'https://')) {
+            return $this->video_path;
+        }
+
+        return asset($this->video_path);
+    }
+
+    /**
+     * Cek apakah produk memiliki berkas video.
+     */
+    public function hasVideo(): bool
+    {
+        return !empty($this->video_path);
     }
 
     /**

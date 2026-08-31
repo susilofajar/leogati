@@ -110,40 +110,80 @@
     <!-- PRODUCT PRIMARY SECTION (GALLERY & DETAILS) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- LEFT: IMAGES & BADGES -->
+        <!-- LEFT: IMAGES, VIDEO & BADGES -->
         <div class="lg:col-span-5 space-y-4"
             x-data="{
-                activeImage: '{{ ($product->primaryImage && !empty($product->primaryImage->image_path)) ? asset($product->primaryImage->image_path) : '' }}'
+                activeType: 'image',
+                activeSrc: '{{ ($product->primaryImage && !empty($product->primaryImage->image_path)) ? asset($product->primaryImage->image_path) : '' }}',
+                videoSrc: '{{ $product->hasVideo() ? $product->video_url : '' }}',
+                
+                showImage(src) {
+                    this.activeType = 'image';
+                    this.activeSrc = src;
+                },
+                showVideo() {
+                    this.activeType = 'video';
+                }
             }">
             
-            <!-- MAIN IMAGE DISPLAY -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-center min-h-[340px] max-h-[420px] relative overflow-hidden">
-                <template x-if="activeImage">
-                    <img :src="activeImage" alt="{{ $product->name }}" class="max-h-80 max-w-full object-contain transition-all duration-300">
+            <!-- MAIN MEDIA DISPLAY -->
+            <div class="bg-white p-4 sm:p-6 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-center min-h-[340px] max-h-[420px] relative overflow-hidden">
+                <!-- IMAGE VIEW -->
+                <template x-if="activeType === 'image'">
+                    <div class="w-full h-full flex items-center justify-center">
+                        <template x-if="activeSrc">
+                            <img :src="activeSrc" alt="{{ $product->name }}" class="max-h-80 max-w-full object-contain transition-all duration-300">
+                        </template>
+                        <template x-if="!activeSrc">
+                            <div class="w-28 h-28 rounded-3xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center font-black text-4xl shadow-inner">
+                                {!! $product->category ? $product->category->renderIcon('w-14 h-14') : '<svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>' !!}
+                            </div>
+                        </template>
+                    </div>
                 </template>
-                <template x-if="!activeImage">
-                    <div class="w-28 h-28 rounded-3xl bg-blue-50 text-[#0B5CFF] flex items-center justify-center font-black text-4xl shadow-inner">
-                        {!! $product->category ? $product->category->renderIcon('w-14 h-14') : '<svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>' !!}
+
+                <!-- VIDEO PLAYER VIEW -->
+                <template x-if="activeType === 'video' && videoSrc">
+                    <div class="w-full h-full flex items-center justify-center bg-slate-950 rounded-2xl overflow-hidden p-1">
+                        <video controls autoplay class="w-full max-h-80 object-contain rounded-xl">
+                            <source :src="videoSrc" type="video/mp4">
+                            Browser Anda tidak mendukung tag video HTML5.
+                        </video>
                     </div>
                 </template>
 
                 @if($product->is_featured)
-                    <span class="absolute top-4 left-4 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black rounded-lg shadow-xs">
+                    <span class="absolute top-4 left-4 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black rounded-lg shadow-xs z-10">
                         PRODUK UNGGULAN
                     </span>
                 @endif
             </div>
 
-            <!-- GALLERY THUMBNAILS (IF MULTIPLE IMAGES) -->
-            @if($product->images && $product->images->count() > 1)
+            <!-- GALLERY THUMBNAILS (IF MULTIPLE IMAGES OR VIDEO EXISTS) -->
+            @if(($product->images && $product->images->count() > 1) || $product->hasVideo())
                 <div class="flex items-center gap-3 overflow-x-auto pb-1">
-                    @foreach($product->images as $img)
-                        <button type="button" @click="activeImage = '{{ asset($img->image_path) }}'"
-                            class="w-16 h-16 rounded-xl border-2 p-1 bg-white shrink-0 transition overflow-hidden flex items-center justify-center"
-                            :class="activeImage === '{{ asset($img->image_path) }}' ? 'border-[#0B5CFF] ring-2 ring-blue-100 shadow-xs' : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'">
-                            <img src="{{ asset($img->image_path) }}" alt="Thumbnail" class="max-h-full max-w-full object-contain">
+                    @if($product->images && $product->images->count() > 0)
+                        @foreach($product->images as $img)
+                            <button type="button" @click="showImage('{{ asset($img->image_path) }}')"
+                                class="w-16 h-16 rounded-xl border-2 p-1 bg-white shrink-0 transition overflow-hidden flex items-center justify-center"
+                                :class="(activeType === 'image' && activeSrc === '{{ asset($img->image_path) }}') ? 'border-[#0B5CFF] ring-2 ring-blue-100 shadow-xs' : 'border-slate-200 hover:border-slate-300 opacity-70 hover:opacity-100'">
+                                <img src="{{ asset($img->image_path) }}" alt="Thumbnail" class="max-h-full max-w-full object-contain">
+                            </button>
+                        @endforeach
+                    @endif
+
+                    <!-- VIDEO THUMBNAIL BUTTON -->
+                    @if($product->hasVideo())
+                        <button type="button" @click="showVideo()"
+                            class="w-16 h-16 rounded-xl border-2 p-1 bg-slate-900 text-white shrink-0 transition overflow-hidden flex flex-col items-center justify-center relative group"
+                            :class="activeType === 'video' ? 'border-[#0B5CFF] ring-2 ring-blue-100 shadow-xs' : 'border-slate-700 hover:border-[#0B5CFF] opacity-80 hover:opacity-100'"
+                            title="Tonton Video Produk">
+                            <div class="w-7 h-7 rounded-full bg-[#0B5CFF] text-white flex items-center justify-center shadow-md group-hover:scale-110 transition">
+                                <svg class="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <span class="text-[9px] font-extrabold text-blue-200 mt-1 uppercase tracking-tight">Video</span>
                         </button>
-                    @endforeach
+                    @endif
                 </div>
             @endif
 
