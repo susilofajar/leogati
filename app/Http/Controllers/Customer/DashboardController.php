@@ -22,7 +22,7 @@ class DashboardController extends Controller
             'saved_builds'   => $user->savedPcBuilds()->count(),
         ];
 
-        $recentOrders = $user->orders()->with('items.productVariant.product')->take(5)->get();
+        $recentOrders = $user->orders()->with('items.productVariant')->take(5)->get();
 
         return view('customer.dashboard', compact('user', 'stats', 'recentOrders'));
     }
